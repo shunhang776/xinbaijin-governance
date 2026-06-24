@@ -1,7 +1,7 @@
 package baijin.gate_test
 
-import rego.v1
 import data.baijin.gate
+import rego.v1
 
 base_review := {
 	"protocol": "xinbaijin-review/1.0",
