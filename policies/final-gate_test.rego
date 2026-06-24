@@ -99,3 +99,14 @@ test_missing_top_level_field_is_denied if {
 	mutated := object.remove(base_input, ["review_commit"])
 	not gate.allow with input as mutated
 }
+
+test_content_mismatch_is_denied if {
+	tampered_review := object.union(base_review, {"summary": "被篡改"})
+	tampered_readback := object.union(base_input.readback, {"parsed_review": tampered_review})
+	mutated := object.union(base_input, {"readback": tampered_readback})
+	not gate.allow with input as mutated
+}
+
+test_content_match_is_allowed if {
+	gate.allow with input as base_input
+}
