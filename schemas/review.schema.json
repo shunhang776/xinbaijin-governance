@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.baijin.site/review.schema.json",
+  "title": "Baijin review result",
+  "description": "白槿代码审查结果的唯一跨组件契约。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "repository",
+    "branch",
+    "reviewed_commit",
+    "based_on_branch_head",
+    "verdict",
+    "summary",
+    "findings",
+    "reviewer",
+    "reviewed_at"
+  ],
+  "properties": {
+    "protocol": {
+      "const": "xinbaijin-review/1.0"
+    },
+    "repository": {
+      "enum": [
+        "shunhang776/xinbaijin",
+        "shunhang776/xinbaijin-mcp"
+      ]
+    },
+    "branch": {
+      "const": "dev"
+    },
+    "reviewed_commit": {
+      "$ref": "#/$defs/sha1"
+    },
+    "based_on_branch_head": {
+      "$ref": "#/$defs/sha1"
+    },
+    "verdict": {
+      "enum": [
+        "approved",
+        "changes_requested",
+        "blocked"
+      ]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 10000
+    },
+    "findings": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "$ref": "#/$defs/finding"
+      }
+    },
+    "reviewer": {
+      "const": "ChatGPT"
+    },
+    "reviewed_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+    }
+  },
+  "$defs": {
+    "sha1": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "repositoryPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)(?!.*\\u0000).+$"
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "severity",
+        "file",
+        "line",
+        "title",
+        "description",
+        "recommendation"
+      ],
+      "properties": {
+        "severity": {
+          "enum": [
+            "critical",
+            "high",
+            "medium",
+            "low",
+            "info"
+          ]
+        },
+        "file": {
+          "$ref": "#/$defs/repositoryPath"
+        },
+        "line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 5000
+        },
+        "recommendation": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 5000
+        }
+      }
+    }
+  }
+}

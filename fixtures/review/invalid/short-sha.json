@@ -1,0 +1,12 @@
+{
+  "protocol": "xinbaijin-review/1.0",
+  "repository": "shunhang776/xinbaijin-mcp",
+  "branch": "dev",
+  "reviewed_commit": "abc",
+  "based_on_branch_head": "2222222222222222222222222222222222222222",
+  "verdict": "approved",
+  "summary": "未发现阻塞问题。",
+  "findings": [],
+  "reviewer": "ChatGPT",
+  "reviewed_at": "2026-06-24T12:00:00.000Z"
+}

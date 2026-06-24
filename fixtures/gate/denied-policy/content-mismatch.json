@@ -1,0 +1,72 @@
+{
+  "protocol": "xinbaijin-gate-input/1.0",
+  "repository_key": "xinbaijin-mcp",
+  "repository_full_name": "shunhang776/xinbaijin-mcp",
+  "branch": "dev",
+  "candidate_commit": "1111111111111111111111111111111111111111",
+  "submission_base_head": "2222222222222222222222222222222222222222",
+  "candidate_reachable_from_submission_base": true,
+  "review_commit": "3333333333333333333333333333333333333333",
+  "review_commit_parent_sha": "2222222222222222222222222222222222222222",
+  "review_commit_changed_files": [
+    "review.json"
+  ],
+  "current_branch_head": "3333333333333333333333333333333333333333",
+  "required_check_names": [
+    "baijin/build-test",
+    "baijin/security"
+  ],
+  "required_checks": [
+    {
+      "name": "baijin/build-test",
+      "commit_sha": "1111111111111111111111111111111111111111",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "baijin/security",
+      "commit_sha": "1111111111111111111111111111111111111111",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "review": {
+    "protocol": "xinbaijin-review/1.0",
+    "repository": "shunhang776/xinbaijin-mcp",
+    "branch": "dev",
+    "reviewed_commit": "1111111111111111111111111111111111111111",
+    "based_on_branch_head": "2222222222222222222222222222222222222222",
+    "verdict": "approved",
+    "summary": "被篡改",
+    "findings": [],
+    "reviewer": "ChatGPT",
+    "reviewed_at": "2026-06-24T12:00:00.000Z"
+  },
+  "readback": {
+    "protocol": "xinbaijin-file/1.0",
+    "repository": "shunhang776/xinbaijin-mcp",
+    "ref": "3333333333333333333333333333333333333333",
+    "path": "review.json",
+    "encoding": "utf-8",
+    "github_blob_sha": "4444444444444444444444444444444444444444",
+    "sha256": "4aaee65780a88ae3dc782478095e060c70aef0241083e132fbe7735cbba3bc00",
+    "byte_length": 394,
+    "has_trailing_newline": true,
+    "line_ending": "lf",
+    "content": "{\n  \"protocol\": \"xinbaijin-review/1.0\",\n  \"repository\": \"shunhang776/xinbaijin-mcp\",\n  \"branch\": \"dev\",\n  \"reviewed_commit\": \"1111111111111111111111111111111111111111\",\n  \"based_on_branch_head\": \"2222222222222222222222222222222222222222\",\n  \"verdict\": \"approved\",\n  \"summary\": \"未发现阻塞问题。\",\n  \"findings\": [],\n  \"reviewer\": \"ChatGPT\",\n  \"reviewed_at\": \"2026-06-24T12:00:00.000Z\"\n}\n",
+    "parsed_review": {
+      "protocol": "xinbaijin-review/1.0",
+      "repository": "shunhang776/xinbaijin-mcp",
+      "branch": "dev",
+      "reviewed_commit": "1111111111111111111111111111111111111111",
+      "based_on_branch_head": "2222222222222222222222222222222222222222",
+      "verdict": "approved",
+      "summary": "被篡改",
+      "findings": [],
+      "reviewer": "ChatGPT",
+      "reviewed_at": "2026-06-24T12:00:00.000Z"
+    },
+    "integrity_verified": true
+  },
+  "repair_round": 0
+}

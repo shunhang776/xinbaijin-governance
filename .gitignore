@@ -1,0 +1,14 @@
+node_modules/
+.tools/
+.stryker-tmp/
+reports/
+mutation-report/
+coverage/
+_extract/
+gate-input.json
+*.zip
+.env
+.env.*
+*.log
+.DS_Store
+Thumbs.db

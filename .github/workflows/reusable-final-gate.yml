@@ -1,0 +1,67 @@
+name: reusable-final-gate
+
+on:
+  workflow_call:
+    inputs:
+      gate_input_path:
+        description: Path to gate-input.json inside the caller repository
+        required: true
+        type: string
+      governance_ref:
+        description: Full 40-character commit SHA of xinbaijin-governance
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  final-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Validate governance ref
+        env:
+          GOVERNANCE_REF: ${{ inputs.governance_ref }}
+        run: |
+          if [[ ! "$GOVERNANCE_REF" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "governance_ref must be a full lowercase 40-character SHA" >&2
+            exit 1
+          fi
+
+      - name: Checkout caller repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          path: caller
+
+      - name: Checkout pinned governance repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: shunhang776/xinbaijin-governance
+          ref: ${{ inputs.governance_ref }}
+          path: governance
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: governance/package-lock.json
+
+      - name: Install governance dependencies and policy tools
+        working-directory: governance
+        run: |
+          npm ci
+          npm run tools:install
+
+      - name: Validate gate input schema
+        working-directory: governance
+        env:
+          GATE_INPUT_PATH: ../caller/${{ inputs.gate_input_path }}
+        run: node scripts/validate-gate-input.mjs "$GATE_INPUT_PATH"
+
+      - name: Evaluate final policy
+        working-directory: governance
+        env:
+          GATE_INPUT_PATH: ../caller/${{ inputs.gate_input_path }}
+        run: ./.tools/bin/conftest test "$GATE_INPUT_PATH" --policy policies --namespace baijin.gate

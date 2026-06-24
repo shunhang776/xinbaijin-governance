@@ -1,0 +1,230 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.baijin.site/gate-input.schema.json",
+  "title": "Baijin final gate evidence",
+  "description": "提交给 OPA/Conftest 的完整最终门禁证据。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "repository_key",
+    "repository_full_name",
+    "branch",
+    "candidate_commit",
+    "submission_base_head",
+    "candidate_reachable_from_submission_base",
+    "review_commit",
+    "review_commit_parent_sha",
+    "review_commit_changed_files",
+    "current_branch_head",
+    "required_check_names",
+    "required_checks",
+    "review",
+    "readback",
+    "repair_round"
+  ],
+  "properties": {
+    "protocol": {
+      "const": "xinbaijin-gate-input/1.0"
+    },
+    "repository_key": {
+      "enum": [
+        "xinbaijin",
+        "xinbaijin-mcp"
+      ]
+    },
+    "repository_full_name": {
+      "enum": [
+        "shunhang776/xinbaijin",
+        "shunhang776/xinbaijin-mcp"
+      ]
+    },
+    "branch": {
+      "const": "dev"
+    },
+    "candidate_commit": {
+      "$ref": "#/$defs/sha1"
+    },
+    "submission_base_head": {
+      "$ref": "#/$defs/sha1"
+    },
+    "candidate_reachable_from_submission_base": {
+      "const": true
+    },
+    "review_commit": {
+      "$ref": "#/$defs/sha1"
+    },
+    "review_commit_parent_sha": {
+      "$ref": "#/$defs/sha1"
+    },
+    "review_commit_changed_files": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 500
+      }
+    },
+    "current_branch_head": {
+      "$ref": "#/$defs/sha1"
+    },
+    "required_check_names": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200
+      }
+    },
+    "required_checks": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": {
+        "$ref": "#/$defs/check"
+      }
+    },
+    "review": {
+      "$ref": "https://schemas.baijin.site/review.schema.json"
+    },
+    "readback": {
+      "$ref": "#/$defs/readback"
+    },
+    "repair_round": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2
+    }
+  },
+  "$defs": {
+    "sha1": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "commit_sha",
+        "status",
+        "conclusion"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "commit_sha": {
+          "$ref": "#/$defs/sha1"
+        },
+        "status": {
+          "enum": [
+            "queued",
+            "in_progress",
+            "completed",
+            "pending"
+          ]
+        },
+        "conclusion": {
+          "oneOf": [
+            {
+              "enum": [
+                "success",
+                "failure",
+                "cancelled",
+                "timed_out",
+                "action_required",
+                "neutral",
+                "skipped",
+                "startup_failure",
+                "stale"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "readback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "protocol",
+        "repository",
+        "ref",
+        "path",
+        "encoding",
+        "github_blob_sha",
+        "sha256",
+        "byte_length",
+        "has_trailing_newline",
+        "line_ending",
+        "content",
+        "parsed_review",
+        "integrity_verified"
+      ],
+      "properties": {
+        "protocol": {
+          "const": "xinbaijin-file/1.0"
+        },
+        "repository": {
+          "enum": [
+            "shunhang776/xinbaijin",
+            "shunhang776/xinbaijin-mcp"
+          ]
+        },
+        "ref": {
+          "$ref": "#/$defs/sha1"
+        },
+        "path": {
+          "const": "review.json"
+        },
+        "encoding": {
+          "const": "utf-8"
+        },
+        "github_blob_sha": {
+          "$ref": "#/$defs/sha1"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "has_trailing_newline": {
+          "const": true
+        },
+        "line_ending": {
+          "const": "lf"
+        },
+        "content": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 1000000
+        },
+        "parsed_review": {
+          "$ref": "https://schemas.baijin.site/review.schema.json"
+        },
+        "integrity_verified": {
+          "const": true
+        }
+      }
+    }
+  }
+}
