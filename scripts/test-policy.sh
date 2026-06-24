@@ -14,6 +14,9 @@ if [[ "${OS}" == "Linux" || "${IS_CI}" == "true" || "${IS_GHA}" == "true" ]]; th
   IS_REQUIRED_ENV="true"
 fi
 
+EXPECTED_OPA_VERSION="$(cd "${ROOT}" && node -p "require('./versions.json').opa")"
+EXPECTED_CONFTEST_VERSION="$(cd "${ROOT}" && node -p "require('./versions.json').conftest")"
+
 # ── OPA check ──────────────────────────────────────────────
 if [[ ! -x "${OPA}" ]]; then
   if [[ "${IS_REQUIRED_ENV}" == "true" ]]; then
@@ -23,8 +26,22 @@ if [[ ! -x "${OPA}" ]]; then
   fi
   echo "OPA=LOCAL_NOT_EXECUTED"
 else
-  echo "OPA=$(command -v "${OPA}")"
-  "${OPA}" version
+  OPA_OUTPUT="$("${OPA}" version)"
+  STANDALONE_OPA_VERSION="$(
+    printf '%s\n' "${OPA_OUTPUT}" \
+    | sed -n 's/^Version:[[:space:]]*//p' \
+    | head -n 1
+  )"
+  if [[ -z "${STANDALONE_OPA_VERSION}" ]]; then
+    echo "ERROR: failed to parse OPA version from output:" >&2
+    printf '%s\n' "${OPA_OUTPUT}" >&2
+    exit 1
+  fi
+  if [[ "${STANDALONE_OPA_VERSION}" != "${EXPECTED_OPA_VERSION}" ]]; then
+    echo "ERROR: OPA version mismatch: expected ${EXPECTED_OPA_VERSION}, got ${STANDALONE_OPA_VERSION}" >&2
+    exit 1
+  fi
+  echo "OPA_VERSION=${STANDALONE_OPA_VERSION}"
 fi
 
 # ── Conftest check ─────────────────────────────────────────
@@ -36,8 +53,33 @@ if [[ ! -x "${CONFTEST}" ]]; then
   fi
   echo "CONFTEST=LOCAL_NOT_EXECUTED"
 else
-  echo "CONFTEST=$(command -v "${CONFTEST}")"
-  "${CONFTEST}" --version
+  CONFTEST_OUTPUT="$("${CONFTEST}" --version)"
+  CONFTEST_VERSION="$(
+    printf '%s\n' "${CONFTEST_OUTPUT}" \
+    | sed -n 's/^Conftest:[[:space:]]*//p' \
+    | head -n 1
+  )"
+  CONFTEST_EMBEDDED_OPA_VERSION="$(
+    printf '%s\n' "${CONFTEST_OUTPUT}" \
+    | sed -n 's/^OPA:[[:space:]]*//p' \
+    | head -n 1
+  )"
+  if [[ -z "${CONFTEST_VERSION}" ]]; then
+    echo "ERROR: failed to parse Conftest version from output:" >&2
+    printf '%s\n' "${CONFTEST_OUTPUT}" >&2
+    exit 1
+  fi
+  if [[ -z "${CONFTEST_EMBEDDED_OPA_VERSION}" ]]; then
+    echo "ERROR: failed to parse Conftest embedded OPA version from output:" >&2
+    printf '%s\n' "${CONFTEST_OUTPUT}" >&2
+    exit 1
+  fi
+  if [[ "${CONFTEST_VERSION}" != "${EXPECTED_CONFTEST_VERSION}" ]]; then
+    echo "ERROR: Conftest version mismatch: expected ${EXPECTED_CONFTEST_VERSION}, got ${CONFTEST_VERSION}" >&2
+    exit 1
+  fi
+  echo "CONFTEST_VERSION=${CONFTEST_VERSION}"
+  echo "CONFTEST_EMBEDDED_OPA_VERSION=${CONFTEST_EMBEDDED_OPA_VERSION}"
 fi
 
 # ── Both missing on non-required env → early exit ──────────
