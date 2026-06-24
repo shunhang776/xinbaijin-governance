@@ -9,6 +9,9 @@ on:
 permissions:
   contents: read
 
+env:
+  CI: "true"
+
 concurrency:
   group: governance-ci-${{ github.ref }}
   cancel-in-progress: true
@@ -33,5 +36,11 @@ jobs:
       - name: Install OPA and Conftest with checksum verification
         run: npm run tools:install
 
-      - name: Run full CI test suite (schema, unit, property, mutation, policy)
+      - name: Verify OPA binary
+        run: command -v .tools/bin/opa && .tools/bin/opa version
+
+      - name: Verify Conftest binary
+        run: command -v .tools/bin/conftest && .tools/bin/conftest --version
+
+      - name: Run full CI test suite
         run: npm run test:ci

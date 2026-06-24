@@ -15,6 +15,9 @@ on:
 permissions:
   contents: read
 
+env:
+  CI: "true"
+
 jobs:
   final-gate:
     runs-on: ubuntu-latest
@@ -24,6 +27,7 @@ jobs:
         env:
           GOVERNANCE_REF: ${{ inputs.governance_ref }}
         run: |
+          set -euo pipefail
           if [[ ! "$GOVERNANCE_REF" =~ ^[0-9a-f]{40}$ ]]; then
             echo "governance_ref must be a full lowercase 40-character SHA" >&2
             exit 1
@@ -51,8 +55,16 @@ jobs:
       - name: Install governance dependencies and policy tools
         working-directory: governance
         run: |
+          set -euo pipefail
           npm ci
           npm run tools:install
+
+      - name: Verify Conftest binary
+        working-directory: governance
+        run: |
+          set -euo pipefail
+          command -v .tools/bin/conftest
+          .tools/bin/conftest --version
 
       - name: Validate gate input schema
         working-directory: governance
@@ -64,4 +76,6 @@ jobs:
         working-directory: governance
         env:
           GATE_INPUT_PATH: ../caller/${{ inputs.gate_input_path }}
-        run: ./.tools/bin/conftest test "$GATE_INPUT_PATH" --policy policies --namespace baijin.gate
+        run: |
+          set -euo pipefail
+          .tools/bin/conftest test "$GATE_INPUT_PATH" --policy policies --namespace baijin.gate

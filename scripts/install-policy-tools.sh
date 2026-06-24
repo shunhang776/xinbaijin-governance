@@ -2,7 +2,14 @@
 set -euo pipefail
 
 OS="$(uname -s)"
+IS_CI="${CI:-false}"
+IS_GHA="${GITHUB_ACTIONS:-false}"
+
 if [[ "${OS}" != "Linux" ]]; then
+  if [[ "${IS_CI}" == "true" || "${IS_GHA}" == "true" ]]; then
+    echo "ERROR: OPA/Conftest installation requires Linux, but CI is running on ${OS}." >&2
+    exit 1
+  fi
   echo "LOCAL_NOT_EXECUTED: OPA/Conftest Linux binaries cannot be installed on ${OS}."
   echo "Policy tools are downloaded and executed on ubuntu-latest CI only."
   exit 0
