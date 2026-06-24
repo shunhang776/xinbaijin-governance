@@ -2,7 +2,14 @@
 set -euo pipefail
 
 OS="$(uname -s)"
+IS_CI="${CI:-false}"
+IS_GHA="${GITHUB_ACTIONS:-false}"
+
 if [[ "${OS}" != "Linux" ]]; then
+  if [[ "${IS_CI}" == "true" || "${IS_GHA}" == "true" ]]; then
+    echo "ERROR: OPA/Conftest installation requires Linux, but CI is running on ${OS}." >&2
+    exit 1
+  fi
   echo "LOCAL_NOT_EXECUTED: OPA/Conftest Linux binaries cannot be installed on ${OS}."
   echo "Policy tools are downloaded and executed on ubuntu-latest CI only."
   exit 0
@@ -65,5 +72,44 @@ if [[ ! -x "${BIN_DIR}/conftest" ]]; then
   chmod +x "${BIN_DIR}/conftest"
 fi
 
-"${BIN_DIR}/opa" version
-"${BIN_DIR}/conftest" --version
+# ── Verify installed OPA version ────────────────────────────
+OPA_OUTPUT="$("${BIN_DIR}/opa" version)"
+INSTALLED_OPA_VERSION="$(
+  printf '%s\n' "${OPA_OUTPUT}" \
+  | sed -n 's/^Version:[[:space:]]*//p' \
+  | head -n 1
+)"
+if [[ -z "${INSTALLED_OPA_VERSION}" ]]; then
+  echo "ERROR: failed to parse installed OPA version" >&2
+  printf '%s\n' "${OPA_OUTPUT}" >&2
+  exit 1
+fi
+if [[ "${INSTALLED_OPA_VERSION}" != "${OPA_VERSION}" ]]; then
+  echo "ERROR: installed OPA version ${INSTALLED_OPA_VERSION} != expected ${OPA_VERSION}" >&2
+  exit 1
+fi
+echo "OPA_VERSION=${INSTALLED_OPA_VERSION}"
+
+# ── Verify installed Conftest version ───────────────────────
+CONFTEST_OUTPUT="$("${BIN_DIR}/conftest" --version)"
+INSTALLED_CONFTEST_VERSION="$(
+  printf '%s\n' "${CONFTEST_OUTPUT}" \
+  | sed -n 's/^Conftest:[[:space:]]*//p' \
+  | head -n 1
+)"
+INSTALLED_EMBEDDED_OPA="$(
+  printf '%s\n' "${CONFTEST_OUTPUT}" \
+  | sed -n 's/^OPA:[[:space:]]*//p' \
+  | head -n 1
+)"
+if [[ -z "${INSTALLED_CONFTEST_VERSION}" ]]; then
+  echo "ERROR: failed to parse installed Conftest version" >&2
+  printf '%s\n' "${CONFTEST_OUTPUT}" >&2
+  exit 1
+fi
+if [[ "${INSTALLED_CONFTEST_VERSION}" != "${CONFTEST_VERSION}" ]]; then
+  echo "ERROR: installed Conftest version ${INSTALLED_CONFTEST_VERSION} != expected ${CONFTEST_VERSION}" >&2
+  exit 1
+fi
+echo "CONFTEST_VERSION=${INSTALLED_CONFTEST_VERSION}"
+echo "CONFTEST_EMBEDDED_OPA_VERSION=${INSTALLED_EMBEDDED_OPA:-unknown}"
