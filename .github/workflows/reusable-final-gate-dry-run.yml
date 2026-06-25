@@ -117,6 +117,7 @@ jobs:
         working-directory: governance
         env:
           GATE_INPUT_PATH: ../gate-input-dir/gate-input.json
+          DRY_RUN_RESULT_PATH: ${{ github.workspace }}/production-gate-dry-run-result.json
         run: |
           set -euo pipefail
 
@@ -202,7 +203,7 @@ jobs:
           };
 
           writeFileSync(
-            "production-gate-dry-run-result.json",
+            process.env.DRY_RUN_RESULT_PATH,
             JSON.stringify(result, null, 2) + "\n",
             "utf8"
           );
@@ -264,5 +265,6 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: production-gate-dry-run-result
-          path: production-gate-dry-run-result.json
+          path: ${{ github.workspace }}/production-gate-dry-run-result.json
+          if-no-files-found: error
           retention-days: 7
