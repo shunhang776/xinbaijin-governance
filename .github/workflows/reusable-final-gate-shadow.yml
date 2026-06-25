@@ -15,6 +15,13 @@ on:
         description: Full 40-character commit SHA of xinbaijin-governance
         required: true
         type: string
+      github_app_client_id:
+        description: GitHub App Client ID for the read-only Baijin governance reader
+        required: true
+        type: string
+    secrets:
+      github_app_private_key:
+        required: true
     outputs:
       shadow_policy_result:
         description: Shadow policy evaluation result
@@ -54,12 +61,25 @@ jobs:
             exit 1
           fi
 
+      - name: Generate Baijin reader app token
+        id: baijin-reader-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
+        with:
+          client-id: ${{ inputs.github_app_client_id }}
+          private-key: ${{ secrets.github_app_private_key }}
+          owner: shunhang776
+          repositories: |
+            xinbaijin-governance
+            xinbaijin-mcp
+
       - name: Checkout pinned governance repository
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: shunhang776/xinbaijin-governance
           ref: ${{ inputs.governance_ref }}
           path: governance
+          token: ${{ steps.baijin-reader-token.outputs.token }}
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
