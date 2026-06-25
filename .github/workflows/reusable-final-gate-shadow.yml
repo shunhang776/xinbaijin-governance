@@ -15,8 +15,8 @@ on:
         description: Full 40-character commit SHA of xinbaijin-governance
         required: true
         type: string
-      github_app_client_id:
-        description: GitHub App Client ID for the read-only Baijin governance reader
+      github_app_id:
+        description: GitHub App numeric App ID for the read-only Baijin governance reader
         required: true
         type: string
     secrets:
@@ -65,7 +65,7 @@ jobs:
         id: baijin-reader-token
         uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
         with:
-          client-id: ${{ inputs.github_app_client_id }}
+          app-id: ${{ inputs.github_app_id }}
           private-key: ${{ secrets.github_app_private_key }}
           owner: shunhang776
           repositories: |
