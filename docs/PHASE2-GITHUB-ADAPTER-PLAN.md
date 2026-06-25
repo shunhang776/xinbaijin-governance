@@ -467,7 +467,7 @@ src/
     client.mjs            # Octokit 工厂 + 鉴权
     collector.mjs         # 证据收集器（所有 REST API 调用）
     transform.mjs         # 证据 → gate-input.json 转换
-    event-bridge.mjs      # Webhook → 内部事件标准化
+    event-bridge.mjs      # GitHub Actions 事件 → 内部标准化事件
     check-run.mjs         # Check Run 创建/更新
     errors.mjs            # RetryableError / FatalError
 test/
