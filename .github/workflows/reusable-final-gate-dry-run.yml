@@ -1,0 +1,268 @@
+name: reusable-final-gate-dry-run
+
+on:
+  workflow_call:
+    inputs:
+      governance_ref:
+        description: Full 40-character commit SHA of xinbaijin-governance
+        required: true
+        type: string
+      gate_input_artifact_name:
+        description: Name of the uploaded gate-input.json artifact
+        required: true
+        type: string
+      github_app_id:
+        description: GitHub App numeric App ID for the read-only Baijin governance reader
+        required: true
+        type: string
+    secrets:
+      github_app_private_key:
+        required: true
+    outputs:
+      dry_run_result:
+        description: Dry-run result (allowed, denied, or tool_error)
+        value: ${{ jobs.dry-run-gate.outputs.dry_run_result }}
+      gate_result:
+        description: Policy evaluation result (allowed, denied, or tool_error)
+        value: ${{ jobs.dry-run-gate.outputs.gate_result }}
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  CI: "true"
+
+jobs:
+  dry-run-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      dry_run_result: ${{ steps.classify.outputs.dry_run_result }}
+      gate_result: ${{ steps.classify.outputs.gate_result }}
+    steps:
+      - name: Validate governance ref is full 40-char SHA
+        env:
+          GOVERNANCE_REF: ${{ inputs.governance_ref }}
+        run: |
+          set -euo pipefail
+          if [[ ! "$GOVERNANCE_REF" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "governance_ref must be a full lowercase 40-character SHA" >&2
+            exit 1
+          fi
+
+      - name: Generate Baijin reader app token
+        id: baijin-reader-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1
+        with:
+          app-id: ${{ inputs.github_app_id }}
+          private-key: ${{ secrets.github_app_private_key }}
+          owner: shunhang776
+          repositories: |
+            xinbaijin-governance
+
+      - name: Checkout pinned governance repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          repository: shunhang776/xinbaijin-governance
+          ref: ${{ inputs.governance_ref }}
+          path: governance
+          token: ${{ steps.baijin-reader-token.outputs.token }}
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: governance/package-lock.json
+
+      - name: Install governance dependencies and policy tools
+        working-directory: governance
+        run: |
+          set -euo pipefail
+          npm ci
+          npm run tools:install
+
+      - name: Verify tools are present
+        working-directory: governance
+        run: |
+          set -euo pipefail
+          command -v .tools/bin/conftest
+          .tools/bin/conftest --version
+
+      - name: Download gate-input artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: ${{ inputs.gate_input_artifact_name }}
+          path: gate-input-dir
+
+      - name: Verify artifact exists
+        run: |
+          set -euo pipefail
+          if [ ! -f gate-input-dir/gate-input.json ]; then
+            echo "ERROR: gate-input.json not found in downloaded artifact" >&2
+            ls -la gate-input-dir/ >&2
+            exit 1
+          fi
+
+      - name: Validate gate input schema
+        working-directory: governance
+        env:
+          GATE_INPUT_PATH: ../gate-input-dir/gate-input.json
+        run: node scripts/validate-gate-input.mjs "$GATE_INPUT_PATH"
+
+      - name: Evaluate policy and classify result
+        id: classify
+        working-directory: governance
+        env:
+          GATE_INPUT_PATH: ../gate-input-dir/gate-input.json
+        run: |
+          set -euo pipefail
+
+          cat > "$RUNNER_TEMP/classify-dry-run.mjs" << 'SCRIPTEOF'
+          import { readFileSync, writeFileSync } from "node:fs";
+          import { execSync } from "node:child_process";
+
+          const gateInputPath = process.env.GATE_INPUT_PATH;
+          const gateInput = JSON.parse(readFileSync(gateInputPath, "utf8"));
+
+          // Run conftest, capture output and exit code
+          let conftestStdout = "";
+          let conftestExit = 0;
+          try {
+            conftestStdout = execSync(
+              ".tools/bin/conftest test " + gateInputPath +
+              " --policy policies --namespace baijin.gate --output json",
+              { encoding: "utf8", timeout: 30000 }
+            ).trim();
+          } catch (err) {
+            conftestExit = err.status || 1;
+            conftestStdout = (err.stdout || "") + (err.stderr || "");
+          }
+
+          // Classify: allowed, denied, or tool_error
+          let gateResult = "tool_error";
+          let failures = 0;
+          let exceptions = 0;
+          let denialReasons = [];
+
+          if (conftestStdout) {
+            try {
+              const parsed = JSON.parse(conftestStdout);
+              if (Array.isArray(parsed)) {
+                for (const entry of parsed) {
+                  if (entry.exceptions && Array.isArray(entry.exceptions)) {
+                    exceptions += entry.exceptions.length;
+                  }
+                  if (entry.failures && Array.isArray(entry.failures)) {
+                    for (const f of entry.failures) {
+                      failures++;
+                      denialReasons.push(f.msg || f.message || JSON.stringify(f));
+                    }
+                  }
+                }
+                if (exceptions === 0 && failures === 0) {
+                  gateResult = "allowed";
+                } else if (exceptions === 0 && failures > 0) {
+                  gateResult = "denied";
+                }
+                // if exceptions > 0, gateResult stays "tool_error"
+              }
+            } catch {
+              // unparseable output -> tool_error
+            }
+          }
+
+          // Compute dry-run result
+          let dryRunResult;
+          if (gateResult === "allowed") {
+            dryRunResult = "allowed";
+          } else if (gateResult === "denied") {
+            dryRunResult = "denied";
+          } else {
+            dryRunResult = "tool_error";
+          }
+
+          // Build result JSON
+          const result = {
+            dry_run_result: dryRunResult,
+            gate_result: gateResult,
+            enforcement: "NO",
+            review_verdict: gateInput.review ? gateInput.review.verdict : null,
+            repository_key: gateInput.repository_key,
+            repository_full_name: gateInput.repository_full_name,
+            candidate_commit: gateInput.candidate_commit,
+            review_commit: gateInput.review_commit,
+            governance_ref: process.env.GOVERNANCE_REF || "",
+            failures_count: failures,
+            exceptions_count: exceptions,
+            denial_reasons: denialReasons.slice(0, 10),
+            timestamp: new Date().toISOString()
+          };
+
+          writeFileSync(
+            "production-gate-dry-run-result.json",
+            JSON.stringify(result, null, 2) + "\n",
+            "utf8"
+          );
+
+          // Write step outputs
+          const outputFile = process.env.GITHUB_OUTPUT;
+          if (outputFile) {
+            writeFileSync(outputFile,
+              "dry_run_result=" + dryRunResult + "\n" +
+              "gate_result=" + gateResult + "\n",
+              { flag: "a" }
+            );
+          }
+
+          // Write step summary
+          const summaryFile = process.env.GITHUB_STEP_SUMMARY;
+          if (summaryFile) {
+            const lines = [
+              "# Production Gate Dry-Run Result",
+              "",
+              "| Field | Value |",
+              "|-------|-------|",
+              "| dry_run_result | " + dryRunResult + " |",
+              "| gate_result | " + gateResult + " |",
+              "| enforcement | NO |",
+              "| review_verdict | " + (gateInput.review ? gateInput.review.verdict : "N/A") + " |",
+              "| repository_key | " + (gateInput.repository_key || "N/A") + " |",
+              "| repository_full_name | " + (gateInput.repository_full_name || "N/A") + " |",
+              "| candidate_commit | " + (gateInput.candidate_commit || "N/A") + " |",
+              "| review_commit | " + (gateInput.review_commit || "N/A") + " |",
+              "| governance_ref | " + (process.env.GOVERNANCE_REF || "") + " |",
+              "| failures | " + failures + " |",
+              "| exceptions | " + exceptions + " |",
+              "",
+              "## Denial Reasons",
+              ""
+            ];
+            if (denialReasons.length === 0) {
+              lines.push("(none)");
+            } else {
+              for (const reason of denialReasons.slice(0, 10)) {
+                lines.push("- " + reason);
+              }
+            }
+            writeFileSync(summaryFile, lines.join("\n") + "\n", { flag: "a" });
+          }
+
+          // Decide exit code: tool_error -> failure, allowed/denied -> success
+          if (dryRunResult === "tool_error") {
+            console.error("DRY-RUN: tool_error — workflow will fail");
+            process.exit(1);
+          }
+          console.log("DRY-RUN: " + dryRunResult + " — workflow success");
+          SCRIPTEOF
+
+          node "$RUNNER_TEMP/classify-dry-run.mjs"
+
+      - name: Upload dry-run result artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: production-gate-dry-run-result
+          path: production-gate-dry-run-result.json
+          retention-days: 7
