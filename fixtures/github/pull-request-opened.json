@@ -1,0 +1,22 @@
+{
+  "action": "opened",
+  "number": 42,
+  "pull_request": {
+    "number": 42,
+    "head": {
+      "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "ref": "feature/new-thing"
+    },
+    "base": {
+      "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "ref": "dev"
+    },
+    "html_url": "https://github.com/shunhang776/xinbaijin-mcp/pull/42"
+  },
+  "repository": {
+    "full_name": "shunhang776/xinbaijin-mcp",
+    "owner": {
+      "login": "shunhang776"
+    }
+  }
+}
