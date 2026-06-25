@@ -1,0 +1,115 @@
+name: reusable-final-gate-shadow
+
+on:
+  workflow_call:
+    inputs:
+      gate_input_artifact_name:
+        description: Name of the uploaded gate-input.json artifact
+        required: true
+        type: string
+      expected_policy_result:
+        description: Expected OPA policy result (allowed or denied)
+        required: true
+        type: string
+      governance_ref:
+        description: Full 40-character commit SHA of xinbaijin-governance
+        required: true
+        type: string
+    outputs:
+      shadow_policy_result:
+        description: Shadow policy evaluation result
+        value: ${{ jobs.shadow-gate.outputs.policy_result }}
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  CI: "true"
+
+jobs:
+  shadow-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      policy_result: ${{ steps.evaluate.outputs.result }}
+    steps:
+      - name: Validate governance ref is full 40-char SHA
+        env:
+          GOVERNANCE_REF: ${{ inputs.governance_ref }}
+        run: |
+          set -euo pipefail
+          if [[ ! "$GOVERNANCE_REF" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "governance_ref must be a full lowercase 40-character SHA" >&2
+            exit 1
+          fi
+
+      - name: Validate expected_policy_result
+        env:
+          EXPECTED: ${{ inputs.expected_policy_result }}
+        run: |
+          set -euo pipefail
+          if [ "$EXPECTED" != "allowed" ] && [ "$EXPECTED" != "denied" ]; then
+            echo "expected_policy_result must be 'allowed' or 'denied', got '$EXPECTED'" >&2
+            exit 1
+          fi
+
+      - name: Checkout pinned governance repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: shunhang776/xinbaijin-governance
+          ref: ${{ inputs.governance_ref }}
+          path: governance
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: governance/package-lock.json
+
+      - name: Install governance dependencies and policy tools
+        working-directory: governance
+        run: |
+          set -euo pipefail
+          npm ci
+          npm run tools:install
+
+      - name: Verify tools are present
+        working-directory: governance
+        run: |
+          set -euo pipefail
+          command -v .tools/bin/conftest
+          .tools/bin/conftest --version
+
+      - name: Download gate-input artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: ${{ inputs.gate_input_artifact_name }}
+          path: gate-input-dir
+
+      - name: Verify artifact exists
+        run: |
+          set -euo pipefail
+          if [ ! -f gate-input-dir/gate-input.json ]; then
+            echo "ERROR: gate-input.json not found in downloaded artifact" >&2
+            echo "Contents of gate-input-dir:" >&2
+            ls -la gate-input-dir/ >&2
+            exit 1
+          fi
+
+      - name: Validate gate input schema (Ajv)
+        working-directory: governance
+        env:
+          GATE_INPUT_PATH: ../gate-input-dir/gate-input.json
+        run: node scripts/validate-gate-input.mjs "$GATE_INPUT_PATH"
+
+      - name: Evaluate policy and compare with expected
+        id: evaluate
+        working-directory: governance
+        env:
+          GATE_INPUT_PATH: ../gate-input-dir/gate-input.json
+          EXPECTED: ${{ inputs.expected_policy_result }}
+        run: |
+          set -euo pipefail
+          bash scripts/evaluate-shadow.sh "$GATE_INPUT_PATH" "$EXPECTED"

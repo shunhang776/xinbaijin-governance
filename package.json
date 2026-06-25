@@ -11,7 +11,7 @@
     "test": "vitest run",
     "test:schema": "node scripts/validate-fixtures.mjs",
     "tools:install": "bash scripts/install-policy-tools.sh",
-    "test:policy": "bash scripts/test-version-parsing.sh && bash scripts/test-policy.sh",
+    "test:policy": "bash scripts/test-version-parsing.sh && bash scripts/test-policy.sh && bash scripts/test-shadow-policy.sh",
     "test:local": "npm run test:schema && npm test && npm run mutation && npm audit --audit-level=moderate",
     "test:ci": "npm run test:local && npm run test:policy",
     "mutation": "stryker run"
