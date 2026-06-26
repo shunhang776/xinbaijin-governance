@@ -1,4 +1,4 @@
-﻿param(
+param(
   [Parameter(Mandatory = $true)]
   [ValidateSet("xinbaijin", "xinbaijin-mcp")]
   [string]$RepositoryKey,
@@ -106,7 +106,7 @@ $review = [ordered]@{
       recommendation = "No production action. This is a controlled Phase 4-E negative validation case."
     }
   )
-  reviewer = "Phase4E Harness"
+  reviewer = "ChatGPT"
   reviewed_at = $reviewedAt
 }
 
