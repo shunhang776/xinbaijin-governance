@@ -1,0 +1,38 @@
+{
+  "protocol": "baijin-phase5-audit-log/1.0",
+  "audit_id": "phase5-audit-log-invalid-production-no-approval",
+  "phase": "phase5",
+  "repository": "shunhang776/xinbaijin-mcp",
+  "branch": "dev",
+  "event_type": "production_enforcer_enabled",
+  "actor": "owner",
+  "action": "invalid production enablement without all approvals",
+  "target": {
+    "type": "phase5_enablement",
+    "id": "phase5-enablement-production-invalid"
+  },
+  "manual_confirmation": true,
+  "approvals": {
+    "owner_approval": true,
+    "gate_owner_approval": false,
+    "rollback_owner_approval": true
+  },
+  "input_artifacts": [
+    "artifacts/phase5/phase5-enablement.json"
+  ],
+  "output_artifacts": [
+    "artifacts/phase5/phase5-audit-log.json"
+  ],
+  "decision_snapshot": {
+    "readiness_status": "production_ready",
+    "ready_for_production": true,
+    "blocker_count": 0
+  },
+  "integrity": {
+    "artifacts_verified": true,
+    "sha256_available": true,
+    "utf8_valid": true,
+    "line_ending_recorded": true
+  },
+  "created_at": "2026-06-27T00:00:00.000Z"
+}

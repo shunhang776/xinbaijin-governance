@@ -1,0 +1,39 @@
+{
+  "protocol": "baijin-phase5-audit-log/1.0",
+  "audit_id": "phase5-audit-log-draft-001",
+  "phase": "phase5",
+  "repository": "shunhang776/xinbaijin-mcp",
+  "branch": "dev",
+  "event_type": "phase5_manual_approval_draft_created",
+  "actor": "workflow_dispatch",
+  "action": "created Phase5 manual approval draft artifacts",
+  "target": {
+    "type": "phase5_enablement",
+    "id": "phase5-enablement-manual-approval-draft-001"
+  },
+  "manual_confirmation": false,
+  "approvals": {
+    "owner_approval": false,
+    "gate_owner_approval": false,
+    "rollback_owner_approval": false
+  },
+  "input_artifacts": [
+    "schemas/phase5-enablement.schema.json"
+  ],
+  "output_artifacts": [
+    "artifacts/phase5/phase5-enablement.json",
+    "artifacts/phase5/phase5-readiness.json"
+  ],
+  "decision_snapshot": {
+    "readiness_status": "manual_gate_ready",
+    "ready_for_production": false,
+    "blocker_count": 0
+  },
+  "integrity": {
+    "artifacts_verified": false,
+    "sha256_available": false,
+    "utf8_valid": true,
+    "line_ending_recorded": false
+  },
+  "created_at": "2026-06-27T00:00:00.000Z"
+}
