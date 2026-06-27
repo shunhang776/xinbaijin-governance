@@ -82,6 +82,10 @@ jobs:
             --invocation-id invocation-l4-dry-run-review-001 \
             --created-at 2026-06-27T00:00:00.000Z
 
+      - name: Build Gate production decision draft
+        run: |
+          node scripts/l4/build-dry-run-gate-decision.mjs --run-result artifacts/l4/l4-run-result.json --review-result artifacts/l4/chatgpt-review-result.json --out artifacts/l4/gate-production-decision.json --decision-id gate-production-decision-l4-dry-run-001 --created-at 2026-06-27T00:00:00.000Z
+
       - name: Build L4 dry-run artifact manifest
         run: |
           node scripts/l4/build-dry-run-artifact.mjs \
