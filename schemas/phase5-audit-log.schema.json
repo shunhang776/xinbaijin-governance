@@ -1,0 +1,234 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baijin.local/schemas/phase5-audit-log.schema.json",
+  "title": "Baijin Phase5 Audit Log",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "audit_id",
+    "phase",
+    "repository",
+    "branch",
+    "event_type",
+    "actor",
+    "action",
+    "target",
+    "manual_confirmation",
+    "approvals",
+    "input_artifacts",
+    "output_artifacts",
+    "integrity",
+    "created_at"
+  ],
+  "properties": {
+    "protocol": {
+      "const": "baijin-phase5-audit-log/1.0"
+    },
+    "audit_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "phase": {
+      "const": "phase5"
+    },
+    "repository": {
+      "type": "string",
+      "enum": [
+        "shunhang776/xinbaijin",
+        "shunhang776/xinbaijin-mcp"
+      ]
+    },
+    "branch": {
+      "const": "dev"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "phase5_enablement_created",
+        "phase5_readiness_checked",
+        "phase5_manual_approval_draft_created",
+        "phase5_rollback_plan_created",
+        "phase5_audit_log_created",
+        "gate_production_decision_created",
+        "production_enforcer_enabled",
+        "production_enforcer_disabled",
+        "rollback_started",
+        "rollback_completed",
+        "manual_required_recorded",
+        "policy_violation_recorded"
+      ]
+    },
+    "actor": {
+      "type": "string",
+      "minLength": 1
+    },
+    "action": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "id"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "phase5_enablement",
+            "phase5_readiness",
+            "phase5_rollback_plan",
+            "gate_production_decision",
+            "workflow",
+            "rollback",
+            "manual_required"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "manual_confirmation": {
+      "type": "boolean"
+    },
+    "approvals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner_approval",
+        "gate_owner_approval",
+        "rollback_owner_approval"
+      ],
+      "properties": {
+        "owner_approval": {
+          "type": "boolean"
+        },
+        "gate_owner_approval": {
+          "type": "boolean"
+        },
+        "rollback_owner_approval": {
+          "type": "boolean"
+        }
+      }
+    },
+    "input_artifacts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "output_artifacts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "decision_snapshot": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "decision": {
+          "type": "string"
+        },
+        "reason_code": {
+          "type": "string"
+        },
+        "readiness_status": {
+          "type": "string"
+        },
+        "ready_for_production": {
+          "type": "boolean"
+        },
+        "blocker_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifacts_verified",
+        "sha256_available",
+        "utf8_valid",
+        "line_ending_recorded"
+      ],
+      "properties": {
+        "artifacts_verified": {
+          "type": "boolean"
+        },
+        "sha256_available": {
+          "type": "boolean"
+        },
+        "utf8_valid": {
+          "type": "boolean"
+        },
+        "line_ending_recorded": {
+          "type": "boolean"
+        }
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "production_enforcer_enabled"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "manual_confirmation": {
+            "const": true
+          },
+          "approvals": {
+            "properties": {
+              "owner_approval": {
+                "const": true
+              },
+              "gate_owner_approval": {
+                "const": true
+              },
+              "rollback_owner_approval": {
+                "const": true
+              }
+            }
+          },
+          "integrity": {
+            "properties": {
+              "artifacts_verified": {
+                "const": true
+              },
+              "sha256_available": {
+                "const": true
+              },
+              "utf8_valid": {
+                "const": true
+              },
+              "line_ending_recorded": {
+                "const": true
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
