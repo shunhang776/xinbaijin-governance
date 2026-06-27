@@ -1,4 +1,4 @@
-﻿{
+{
     "$schema":  "https://json-schema.org/draft/2020-12/schema",
     "$id":  "https://baijin.local/schemas/l4-event.schema.json",
     "title":  "Baijin L4 Event",
