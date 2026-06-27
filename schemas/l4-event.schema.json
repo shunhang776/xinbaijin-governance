@@ -1,107 +1,107 @@
 {
-    "$schema":  "https://json-schema.org/draft/2020-12/schema",
-    "$id":  "https://baijin.local/schemas/l4-event.schema.json",
-    "title":  "Baijin L4 Event",
-    "type":  "object",
-    "additionalProperties":  false,
-    "required":  [
-                     "protocol",
-                     "event_id",
-                     "task_id",
-                     "event_type",
-                     "repository",
-                     "branch",
-                     "actor",
-                     "repair_round",
-                     "payload",
-                     "created_at"
-                 ],
-    "properties":  {
-                       "protocol":  {
-                                        "const":  "baijin-l4-event/1.0"
-                                    },
-                       "event_id":  {
-                                        "type":  "string",
-                                        "minLength":  1
-                                    },
-                       "task_id":  {
-                                       "type":  "string",
-                                       "minLength":  1
-                                   },
-                       "event_type":  {
-                                          "type":  "string",
-                                          "enum":  [
-                                                       "CODE_DETECTED",
-                                                       "CHECKS_STARTED",
-                                                       "CHECKS_PASSED",
-                                                       "CHECKS_FAILED",
-                                                       "REVIEW_REQUESTED",
-                                                       "REVIEW_WRITTEN",
-                                                       "REVIEW_APPROVED",
-                                                       "REVIEW_DENIED",
-                                                       "REVIEW_BLOCKED",
-                                                       "REPAIR_REQUESTED",
-                                                       "REPAIR_SUBMITTED",
-                                                       "GATE_ALLOWED",
-                                                       "GATE_DENIED",
-                                                       "STALE_REVIEW_DETECTED",
-                                                       "BRANCH_HEAD_CHANGED",
-                                                       "REPAIR_ROUND_EXCEEDED",
-                                                       "REPEATED_FINDING_DETECTED",
-                                                       "TOOL_ERROR",
-                                                       "MANUAL_OVERRIDE_REQUESTED",
-                                                       "ACCEPTED"
-                                                   ]
-                                      },
-                       "repository":  {
-                                          "type":  "string",
-                                          "enum":  [
-                                                       "shunhang776/xinbaijin",
-                                                       "shunhang776/xinbaijin-mcp"
-                                                   ]
-                                      },
-                       "branch":  {
-                                      "type":  "string",
-                                      "const":  "dev"
-                                  },
-                       "actor":  {
-                                     "type":  "string",
-                                     "enum":  [
-                                                  "claude",
-                                                  "codex",
-                                                  "chatgpt-reviewer",
-                                                  "github-actions",
-                                                  "gate",
-                                                  "human",
-                                                  "system"
-                                              ]
-                                 },
-                       "commit":  {
-                                      "type":  [
-                                                   "string",
-                                                   "null"
-                                               ],
-                                      "pattern":  "^[0-9a-f]{40}$"
-                                  },
-                       "review_commit":  {
-                                             "type":  [
-                                                          "string",
-                                                          "null"
-                                                      ],
-                                             "pattern":  "^[0-9a-f]{40}$"
-                                         },
-                       "repair_round":  {
-                                            "type":  "integer",
-                                            "minimum":  0,
-                                            "maximum":  10
-                                        },
-                       "payload":  {
-                                       "type":  "object",
-                                       "additionalProperties":  true
-                                   },
-                       "created_at":  {
-                                          "type":  "string",
-                                          "format":  "date-time"
-                                      }
-                   }
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baijin.local/schemas/l4-event.schema.json",
+  "title": "Baijin L4 Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "event_id",
+    "task_id",
+    "event_type",
+    "repository",
+    "branch",
+    "actor",
+    "repair_round",
+    "payload",
+    "created_at"
+  ],
+  "properties": {
+    "protocol": {
+      "const": "baijin-l4-event/1.0"
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "CODE_DETECTED",
+        "CHECKS_STARTED",
+        "CHECKS_PASSED",
+        "CHECKS_FAILED",
+        "REVIEW_REQUESTED",
+        "REVIEW_WRITTEN",
+        "REVIEW_APPROVED",
+        "REVIEW_DENIED",
+        "REVIEW_BLOCKED",
+        "REPAIR_REQUESTED",
+        "REPAIR_SUBMITTED",
+        "GATE_ALLOWED",
+        "GATE_DENIED",
+        "STALE_REVIEW_DETECTED",
+        "BRANCH_HEAD_CHANGED",
+        "REPAIR_ROUND_EXCEEDED",
+        "REPEATED_FINDING_DETECTED",
+        "TOOL_ERROR",
+        "MANUAL_OVERRIDE_REQUESTED",
+        "ACCEPTED"
+      ]
+    },
+    "repository": {
+      "type": "string",
+      "enum": [
+        "shunhang776/xinbaijin",
+        "shunhang776/xinbaijin-mcp"
+      ]
+    },
+    "branch": {
+      "type": "string",
+      "const": "dev"
+    },
+    "actor": {
+      "type": "string",
+      "enum": [
+        "claude",
+        "codex",
+        "chatgpt-reviewer",
+        "github-actions",
+        "gate",
+        "human",
+        "system"
+      ]
+    },
+    "commit": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "review_commit": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "repair_round": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
 }
