@@ -2,6 +2,8 @@
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { chatGptReviewResultToL4EventObjects } from '../../src/l4/chatgpt-review-result-adapter.mjs';
 
 function readJson(path) {
   const raw = readFileSync(resolve(path), 'utf8').replace(/^\uFEFF/, '');
@@ -14,7 +16,8 @@ function writeJson(path, value) {
 
 function parseArgs(argv) {
   const args = {
-    out: null
+    out: null,
+    review_result: null
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -22,6 +25,11 @@ function parseArgs(argv) {
 
     if (key === '--out') {
       args.out = argv[++i];
+      continue;
+    }
+
+    if (key === '--review-result') {
+      args.review_result = argv[++i];
       continue;
     }
 
@@ -74,8 +82,26 @@ function makeEvent(taskId, eventType, index) {
   };
 }
 
-export function buildDryRunInput() {
+export function buildDryRunInput(options = {}) {
   const taskId = 'task-l4-dry-run-001';
+  const eventTemplate = makeEventTemplate(taskId);
+  let reviewEvents = [];
+
+  if (options.review_result) {
+    const reviewResult = readJson(options.review_result);
+    const mapped = chatGptReviewResultToL4EventObjects(reviewResult, eventTemplate, {
+      task_id: taskId,
+      run_id: 'run-l4-dry-run-001',
+      current_branch_head: reviewResult.based_on_branch_head,
+      created_at: '2026-06-27T00:00:00.000Z'
+    });
+
+    reviewEvents = mapped.events;
+  } else {
+    reviewEvents = [
+      makeEvent(taskId, 'REVIEW_APPROVED', 4)
+    ];
+  }
 
   return {
     run_id: 'run-l4-dry-run-001',
@@ -84,14 +110,14 @@ export function buildDryRunInput() {
     branch: 'dev',
     created_at: '2026-06-27T00:00:00.000Z',
     baseTaskState: makeTaskState(taskId),
-    eventTemplate: makeEventTemplate(taskId),
+    eventTemplate,
     initialEvents: [
       makeEvent(taskId, 'CODE_DETECTED', 1),
       makeEvent(taskId, 'CHECKS_STARTED', 2),
       makeEvent(taskId, 'CHECKS_PASSED', 3)
     ],
     tailEvents: [
-      makeEvent(taskId, 'REVIEW_APPROVED', 4),
+      ...reviewEvents,
       makeEvent(taskId, 'GATE_ALLOWED', 5)
     ],
     snapshotOptions: {
@@ -100,11 +126,9 @@ export function buildDryRunInput() {
   };
 }
 
-if (resolve(process.argv[1]) === fileURLToPathSafe(import.meta.url)) {
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const args = parseArgs(process.argv.slice(2));
-  writeJson(args.out, buildDryRunInput());
-}
-
-function fileURLToPathSafe(url) {
-  return new URL(url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
+  writeJson(args.out, buildDryRunInput({
+    review_result: args.review_result
+  }));
 }

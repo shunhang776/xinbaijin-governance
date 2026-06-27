@@ -21,7 +21,8 @@ function parseArgs(argv) {
     output_path: 'artifacts/l4/l4-pipeline-output.json',
     run_result_path: 'artifacts/l4/l4-run-result.json',
     bridge_result_path: 'artifacts/l4/codex-bridge-result.json',
-    review_invocation_path: 'artifacts/l4/chatgpt-review-invocation.json'
+    review_invocation_path: 'artifacts/l4/chatgpt-review-invocation.json',
+    review_result_path: 'artifacts/l4/chatgpt-review-result.json'
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -121,7 +122,8 @@ export function runBuildDryRunArtifactCli(argv) {
     output_path: args.output_path,
     run_result_path: args.run_result_path,
     bridge_result_path: args.bridge_result_path,
-    review_invocation_path: args.review_invocation_path
+    review_invocation_path: args.review_invocation_path,
+    review_result_path: args.review_result_path
   });
 
   writeJson(args.out, artifact);

@@ -38,10 +38,32 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Prepare L4 dry-run artifact directory
+        run: mkdir -p artifacts/l4
+
+      - name: Build ChatGPT review invocation draft
+        run: |
+          node src/codex/bridge-cli.mjs \
+            --request fixtures/codex-bridge-request/valid-review-bridge.json \
+            --out artifacts/l4/codex-bridge-result.json \
+            --result-id result-l4-dry-run-review-001 \
+            --review-invocation-out artifacts/l4/chatgpt-review-invocation.json \
+            --invocation-id invocation-l4-dry-run-review-001 \
+            --created-at 2026-06-27T00:00:00.000Z
+
+      - name: Build simulated ChatGPT review result
+        run: |
+          node scripts/l4/build-dry-run-review-result.mjs \
+            --invocation artifacts/l4/chatgpt-review-invocation.json \
+            --out artifacts/l4/chatgpt-review-result.json \
+            --result-id chatgpt-review-result-l4-dry-run-001 \
+            --created-at 2026-06-27T00:00:00.000Z
+
       - name: Build L4 dry-run input
         run: |
-          mkdir -p artifacts/l4
-          node scripts/l4/build-dry-run-input.mjs --out artifacts/l4/l4-pipeline-input.json
+          node scripts/l4/build-dry-run-input.mjs \
+            --review-result artifacts/l4/chatgpt-review-result.json \
+            --out artifacts/l4/l4-pipeline-input.json
 
       - name: Run L4 pipeline CLI
         run: |
