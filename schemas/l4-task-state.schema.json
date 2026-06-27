@@ -1,0 +1,146 @@
+﻿{
+    "$schema":  "https://json-schema.org/draft/2020-12/schema",
+    "$id":  "https://baijin.local/schemas/l4-task-state.schema.json",
+    "title":  "Baijin L4 Task State",
+    "type":  "object",
+    "additionalProperties":  false,
+    "required":  [
+                     "protocol",
+                     "task_id",
+                     "repository",
+                     "branch",
+                     "state",
+                     "repair_round",
+                     "max_repair_round",
+                     "created_at",
+                     "updated_at"
+                 ],
+    "properties":  {
+                       "protocol":  {
+                                        "const":  "baijin-l4-task-state/1.0"
+                                    },
+                       "task_id":  {
+                                       "type":  "string",
+                                       "minLength":  1
+                                   },
+                       "repository":  {
+                                          "type":  "string",
+                                          "enum":  [
+                                                       "shunhang776/xinbaijin",
+                                                       "shunhang776/xinbaijin-mcp"
+                                                   ]
+                                      },
+                       "branch":  {
+                                      "type":  "string",
+                                      "const":  "dev"
+                                  },
+                       "state":  {
+                                     "type":  "string",
+                                     "enum":  [
+                                                  "WAIT_CODE",
+                                                  "CODE_SUBMITTED",
+                                                  "CHECKS_RUNNING",
+                                                  "WAIT_REVIEW",
+                                                  "REVIEW_APPROVED",
+                                                  "REVIEW_DENIED",
+                                                  "REVIEW_BLOCKED",
+                                                  "REPAIR_REQUESTED",
+                                                  "REPAIR_SUBMITTED",
+                                                  "WAIT_RE_REVIEW",
+                                                  "ACCEPTED",
+                                                  "MANUAL_REQUIRED"
+                                              ]
+                                 },
+                       "candidate_commit":  {
+                                                "type":  [
+                                                             "string",
+                                                             "null"
+                                                         ],
+                                                "pattern":  "^[0-9a-f]{40}$"
+                                            },
+                       "current_branch_head":  {
+                                                   "type":  [
+                                                                "string",
+                                                                "null"
+                                                            ],
+                                                   "pattern":  "^[0-9a-f]{40}$"
+                                               },
+                       "review_commit":  {
+                                             "type":  [
+                                                          "string",
+                                                          "null"
+                                                      ],
+                                             "pattern":  "^[0-9a-f]{40}$"
+                                         },
+                       "repair_commit":  {
+                                             "type":  [
+                                                          "string",
+                                                          "null"
+                                                      ],
+                                             "pattern":  "^[0-9a-f]{40}$"
+                                         },
+                       "verdict":  {
+                                       "type":  [
+                                                    "string",
+                                                    "null"
+                                                ],
+                                       "enum":  [
+                                                    "approved",
+                                                    "changes_requested",
+                                                    "blocked",
+                                                    null
+                                                ]
+                                   },
+                       "gate_result":  {
+                                           "type":  [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                           "enum":  [
+                                                        "allowed",
+                                                        "denied",
+                                                        "blocked",
+                                                        "tool_error",
+                                                        null
+                                                    ]
+                                       },
+                       "findings":  {
+                                        "type":  "array",
+                                        "items":  {
+                                                      "type":  "object",
+                                                      "additionalProperties":  true
+                                                  }
+                                    },
+                       "required_checks":  {
+                                               "type":  "array",
+                                               "items":  {
+                                                             "type":  "object",
+                                                             "additionalProperties":  true
+                                                         }
+                                           },
+                       "repair_round":  {
+                                            "type":  "integer",
+                                            "minimum":  0,
+                                            "maximum":  10
+                                        },
+                       "max_repair_round":  {
+                                                "type":  "integer",
+                                                "minimum":  0,
+                                                "maximum":  10
+                                            },
+                       "last_error":  {
+                                          "type":  [
+                                                       "string",
+                                                       "null"
+                                                   ]
+                                      },
+                       "created_at":  {
+                                          "type":  "string",
+                                          "format":  "date-time"
+                                      },
+                       "updated_at":  {
+                                          "type":  "string",
+                                          "format":  "date-time"
+                                      }
+                   }
+}
