@@ -13,73 +13,107 @@ export const L4_STATES = Object.freeze({
   MANUAL_REQUIRED: 'MANUAL_REQUIRED'
 });
 
+const ROOT_ID = 'baijin-l4-loop';
+
+function nodeId(state) {
+  return ROOT_ID + '.' + state;
+}
+
+function target(state) {
+  return '#' + ROOT_ID + '.' + state;
+}
+
 export function createL4Machine() {
   return createMachine({
-    id: 'baijin-l4-loop',
+    id: ROOT_ID,
     initial: L4_STATES.WAIT_CODE,
+    on: {
+      TOOL_ERROR: { target: target(L4_STATES.MANUAL_REQUIRED) },
+      STALE_REVIEW_DETECTED: { target: target(L4_STATES.MANUAL_REQUIRED) },
+      BRANCH_HEAD_CHANGED: { target: target(L4_STATES.MANUAL_REQUIRED) }
+    },
     states: {
       [L4_STATES.WAIT_CODE]: {
+        id: nodeId(L4_STATES.WAIT_CODE),
         on: {
-          CODE_DETECTED: L4_STATES.CODE_SUBMITTED
+          CODE_DETECTED: { target: target(L4_STATES.CODE_SUBMITTED) }
         }
       },
 
       [L4_STATES.CODE_SUBMITTED]: {
+        id: nodeId(L4_STATES.CODE_SUBMITTED),
         on: {
-          CHECKS_STARTED: L4_STATES.CHECKS_RUNNING,
-          TOOL_ERROR: L4_STATES.MANUAL_REQUIRED
+          CHECKS_STARTED: { target: target(L4_STATES.CHECKS_RUNNING) },
+          TOOL_ERROR: { target: target(L4_STATES.MANUAL_REQUIRED) }
         }
       },
 
       [L4_STATES.CHECKS_RUNNING]: {
+        id: nodeId(L4_STATES.CHECKS_RUNNING),
         on: {
-          CHECKS_PASSED: L4_STATES.WAIT_REVIEW,
-          CHECKS_FAILED: L4_STATES.MANUAL_REQUIRED
+          CHECKS_PASSED: { target: target(L4_STATES.WAIT_REVIEW) },
+          CHECKS_FAILED: { target: target(L4_STATES.MANUAL_REQUIRED) },
+          TOOL_ERROR: { target: target(L4_STATES.MANUAL_REQUIRED) }
         }
       },
 
       [L4_STATES.WAIT_REVIEW]: {
+        id: nodeId(L4_STATES.WAIT_REVIEW),
         on: {
-          REVIEW_DENIED: L4_STATES.REVIEW_DENIED,
-          REVIEW_APPROVED: L4_STATES.REVIEW_APPROVED,
-          REVIEW_BLOCKED: L4_STATES.MANUAL_REQUIRED,
-          STALE_REVIEW_DETECTED: L4_STATES.MANUAL_REQUIRED
+          REVIEW_REQUESTED: { target: target(L4_STATES.WAIT_REVIEW) },
+          REVIEW_DENIED: { target: target(L4_STATES.REVIEW_DENIED) },
+          REVIEW_APPROVED: { target: target(L4_STATES.REVIEW_APPROVED) },
+          REVIEW_BLOCKED: { target: target(L4_STATES.MANUAL_REQUIRED) },
+          STALE_REVIEW_DETECTED: { target: target(L4_STATES.MANUAL_REQUIRED) },
+          TOOL_ERROR: { target: target(L4_STATES.MANUAL_REQUIRED) }
         }
       },
 
       [L4_STATES.REVIEW_DENIED]: {
+        id: nodeId(L4_STATES.REVIEW_DENIED),
         on: {
-          REPAIR_REQUESTED: L4_STATES.REPAIR_REQUESTED,
-          REPAIR_ROUND_EXCEEDED: L4_STATES.MANUAL_REQUIRED,
-          REPEATED_FINDING_DETECTED: L4_STATES.MANUAL_REQUIRED
+          REPAIR_REQUESTED: { target: target(L4_STATES.REPAIR_REQUESTED) },
+          REPAIR_ROUND_EXCEEDED: { target: target(L4_STATES.MANUAL_REQUIRED) },
+          REPEATED_FINDING_DETECTED: { target: target(L4_STATES.MANUAL_REQUIRED) },
+          TOOL_ERROR: { target: target(L4_STATES.MANUAL_REQUIRED) },
+          STALE_REVIEW_DETECTED: { target: target(L4_STATES.MANUAL_REQUIRED) },
+          BRANCH_HEAD_CHANGED: { target: target(L4_STATES.MANUAL_REQUIRED) }
         }
       },
 
       [L4_STATES.REPAIR_REQUESTED]: {
+        id: nodeId(L4_STATES.REPAIR_REQUESTED),
         on: {
-          REPAIR_SUBMITTED: L4_STATES.REPAIR_SUBMITTED,
-          BRANCH_HEAD_CHANGED: L4_STATES.MANUAL_REQUIRED
+          REPAIR_SUBMITTED: { target: target(L4_STATES.REPAIR_SUBMITTED) },
+          BRANCH_HEAD_CHANGED: { target: target(L4_STATES.MANUAL_REQUIRED) },
+          TOOL_ERROR: { target: target(L4_STATES.MANUAL_REQUIRED) }
         }
       },
 
       [L4_STATES.REPAIR_SUBMITTED]: {
+        id: nodeId(L4_STATES.REPAIR_SUBMITTED),
         on: {
-          CHECKS_STARTED: L4_STATES.CHECKS_RUNNING
+          CHECKS_STARTED: { target: target(L4_STATES.CHECKS_RUNNING) },
+          TOOL_ERROR: { target: target(L4_STATES.MANUAL_REQUIRED) }
         }
       },
 
       [L4_STATES.REVIEW_APPROVED]: {
+        id: nodeId(L4_STATES.REVIEW_APPROVED),
         on: {
-          GATE_ALLOWED: L4_STATES.ACCEPTED,
-          GATE_DENIED: L4_STATES.MANUAL_REQUIRED
+          GATE_ALLOWED: { target: target(L4_STATES.ACCEPTED) },
+          GATE_DENIED: { target: target(L4_STATES.MANUAL_REQUIRED) },
+          TOOL_ERROR: { target: target(L4_STATES.MANUAL_REQUIRED) }
         }
       },
 
       [L4_STATES.ACCEPTED]: {
+        id: nodeId(L4_STATES.ACCEPTED),
         type: 'final'
       },
 
       [L4_STATES.MANUAL_REQUIRED]: {
+        id: nodeId(L4_STATES.MANUAL_REQUIRED),
         type: 'final'
       }
     }
