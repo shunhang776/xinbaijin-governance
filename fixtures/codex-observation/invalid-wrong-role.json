@@ -1,0 +1,7 @@
+{
+    "protocol":  "baijin-codex-bridge-observation/1.0",
+    "experiment":  "phase0-invalid",
+    "codex_role":  "reviewer",
+    "observed_at":  "2026-06-27T00:00:00.000Z",
+    "conclusion":  "CODEX_BRIDGE_SMOKE_READY"
+}

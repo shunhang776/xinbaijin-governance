@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baijin.local/schemas/codex-observation.schema.json",
+  "title": "Baijin Codex Observation",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "protocol",
+    "codex_role",
+    "observed_at",
+    "conclusion"
+  ],
+  "properties": {
+    "protocol": {
+      "type": "string",
+      "enum": [
+        "baijin-codex-bridge-observation/1.0",
+        "baijin-codex-review-bridge-observation/1.0",
+        "baijin-codex-repair-bridge-observation/1.0",
+        "baijin-codex-l4-loop-smoke-observation/1.0"
+      ]
+    },
+    "experiment": {
+      "type": "string",
+      "minLength": 1
+    },
+    "codex_role": {
+      "type": "string",
+      "const": "bridge"
+    },
+    "target_repository": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_branch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "conclusion": {
+      "type": "string",
+      "enum": [
+        "CODEX_BRIDGE_SMOKE_READY",
+        "CODEX_BRIDGE_SMOKE_BLOCKED",
+        "CODEX_REVIEW_BRIDGE_READY",
+        "CODEX_REVIEW_BRIDGE_BLOCKED",
+        "CODEX_REPAIR_BRIDGE_READY",
+        "CODEX_REPAIR_BRIDGE_BLOCKED",
+        "CODEX_L4_LOOP_SMOKE_READY",
+        "CODEX_L4_LOOP_SMOKE_BLOCKED"
+      ]
+    },
+    "forbidden_actions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "allowed_actions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
