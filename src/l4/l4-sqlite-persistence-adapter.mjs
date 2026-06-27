@@ -248,6 +248,82 @@ export function createSqliteL4PersistencePort(db) {
       return cloneJson(stored);
     },
 
+
+    async appendReviewGuard(guard) {
+      if (!guard || typeof guard !== 'object') {
+        throw new TypeError('guard must be an object');
+      }
+
+      const stored = cloneJson(guard);
+
+      db.prepare(`
+        INSERT INTO l4_review_guards (
+          guard_id,
+          task_id,
+          run_id,
+          repository,
+          branch,
+          reviewed_commit,
+          based_on_branch_head,
+          current_branch_head,
+          review_commit,
+          verdict,
+          guard_status,
+          created_at
+        )
+        VALUES (
+          @guard_id,
+          @task_id,
+          @run_id,
+          @repository,
+          @branch,
+          @reviewed_commit,
+          @based_on_branch_head,
+          @current_branch_head,
+          @review_commit,
+          @verdict,
+          @guard_status,
+          @created_at
+        )
+      `).run({
+        guard_id: requireNonEmptyString(stored.guard_id, 'guard_id'),
+        task_id: requireNonEmptyString(stored.task_id, 'task_id'),
+        run_id: stored.run_id || null,
+        repository: getRepository(stored),
+        branch: getBranch(stored),
+        reviewed_commit: normalizeCommit(stored.reviewed_commit, 'reviewed_commit'),
+        based_on_branch_head: normalizeCommit(stored.based_on_branch_head, 'based_on_branch_head'),
+        current_branch_head: normalizeCommit(stored.current_branch_head, 'current_branch_head'),
+        review_commit: normalizeCommit(stored.review_commit || null, 'review_commit'),
+        verdict: requireNonEmptyString(stored.verdict, 'verdict'),
+        guard_status: requireNonEmptyString(stored.guard_status, 'guard_status'),
+        created_at: getCreatedAt(stored)
+      });
+
+      return cloneJson(stored);
+    },
+
+    async listReviewGuards() {
+      const rows = db
+        .prepare('SELECT * FROM l4_review_guards ORDER BY created_at, guard_id')
+        .all();
+
+      return rows.map((row) => ({
+        protocol: 'baijin-l4-review-guard/1.0',
+        guard_id: row.guard_id,
+        task_id: row.task_id,
+        run_id: row.run_id,
+        repository: row.repository,
+        branch: row.branch,
+        reviewed_commit: row.reviewed_commit,
+        based_on_branch_head: row.based_on_branch_head,
+        current_branch_head: row.current_branch_head,
+        review_commit: row.review_commit,
+        verdict: row.verdict,
+        guard_status: row.guard_status,
+        created_at: row.created_at
+      }));
+    },
     async listRunResults() {
       const rows = db
         .prepare('SELECT run_result_json FROM l4_run_results ORDER BY created_at, run_id')
