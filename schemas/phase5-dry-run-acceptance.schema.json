@@ -1,0 +1,188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baijin.local/schemas/phase5-dry-run-acceptance.schema.json",
+  "title": "Baijin Phase5 Dry Run Acceptance",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "acceptance_id",
+    "phase",
+    "repository",
+    "branch",
+    "status",
+    "dry_run_only",
+    "production_enforcer_enabled",
+    "enablement",
+    "readiness",
+    "rollback_plan",
+    "audit_log",
+    "required_checks",
+    "created_at"
+  ],
+  "properties": {
+    "protocol": {
+      "const": "baijin-phase5-dry-run-acceptance/1.0"
+    },
+    "acceptance_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "phase": {
+      "const": "phase5"
+    },
+    "repository": {
+      "type": "string",
+      "enum": [
+        "shunhang776/xinbaijin",
+        "shunhang776/xinbaijin-mcp"
+      ]
+    },
+    "branch": {
+      "const": "dev"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "accepted_dry_run",
+        "blocked"
+      ]
+    },
+    "dry_run_only": {
+      "const": true
+    },
+    "production_enforcer_enabled": {
+      "const": false
+    },
+    "enablement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enablement_id",
+        "mode",
+        "production_enabled"
+      ],
+      "properties": {
+        "enablement_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "manual_gate"
+          ]
+        },
+        "production_enabled": {
+          "const": false
+        }
+      }
+    },
+    "readiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "ready_for_manual_gate",
+        "ready_for_production",
+        "blocker_count"
+      ],
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "ready_for_manual_gate": {
+          "type": "boolean"
+        },
+        "ready_for_production": {
+          "const": false
+        },
+        "blocker_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "rollback_plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rollback_plan_id",
+        "rollback_ready",
+        "mode"
+      ],
+      "properties": {
+        "rollback_plan_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rollback_ready": {
+          "const": true
+        },
+        "mode": {
+          "const": "manual_ready"
+        }
+      }
+    },
+    "audit_log": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "audit_id",
+        "event_type",
+        "manual_confirmation"
+      ],
+      "properties": {
+        "audit_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "event_type": {
+          "type": "string",
+          "enum": [
+            "phase5_manual_approval_draft_created",
+            "phase5_audit_log_created",
+            "phase5_readiness_checked",
+            "phase5_rollback_plan_created"
+          ]
+        },
+        "manual_confirmation": {
+          "type": "boolean"
+        }
+      }
+    },
+    "required_checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enablement_artifact_valid",
+        "readiness_artifact_valid",
+        "rollback_plan_valid",
+        "audit_log_valid",
+        "production_enforcer_not_enabled"
+      ],
+      "properties": {
+        "enablement_artifact_valid": {
+          "const": true
+        },
+        "readiness_artifact_valid": {
+          "const": true
+        },
+        "rollback_plan_valid": {
+          "const": true
+        },
+        "audit_log_valid": {
+          "const": true
+        },
+        "production_enforcer_not_enabled": {
+          "const": true
+        }
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}
