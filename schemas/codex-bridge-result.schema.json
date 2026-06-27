@@ -1,0 +1,187 @@
+{
+    "$schema":  "https://json-schema.org/draft/2020-12/schema",
+    "$id":  "https://baijin.local/schemas/codex-bridge-result.schema.json",
+    "title":  "Baijin Codex Bridge Result",
+    "type":  "object",
+    "additionalProperties":  false,
+    "required":  [
+                     "protocol",
+                     "result_id",
+                     "request_id",
+                     "bridge_type",
+                     "repository",
+                     "branch",
+                     "codex_role",
+                     "status",
+                     "conclusion",
+                     "events",
+                     "created_at"
+                 ],
+    "properties":  {
+                       "protocol":  {
+                                        "const":  "baijin-codex-bridge-result/1.0"
+                                    },
+                       "result_id":  {
+                                         "type":  "string",
+                                         "minLength":  1
+                                     },
+                       "request_id":  {
+                                          "type":  "string",
+                                          "minLength":  1
+                                      },
+                       "bridge_type":  {
+                                           "type":  "string",
+                                           "enum":  [
+                                                        "review_bridge",
+                                                        "repair_bridge",
+                                                        "l4_loop_bridge"
+                                                    ]
+                                       },
+                       "repository":  {
+                                          "type":  "string",
+                                          "enum":  [
+                                                       "shunhang776/xinbaijin",
+                                                       "shunhang776/xinbaijin-mcp",
+                                                       "shunhang776/xinbaijin-governance"
+                                                   ]
+                                      },
+                       "branch":  {
+                                      "type":  "string",
+                                      "minLength":  1
+                                  },
+                       "codex_role":  {
+                                          "type":  "string",
+                                          "const":  "bridge"
+                                      },
+                       "status":  {
+                                      "type":  "string",
+                                      "enum":  [
+                                                   "READY",
+                                                   "BLOCKED",
+                                                   "COMPLETED",
+                                                   "MANUAL_REQUIRED"
+                                               ]
+                                  },
+                       "conclusion":  {
+                                          "type":  "string",
+                                          "enum":  [
+                                                       "CODEX_REVIEW_BRIDGE_READY",
+                                                       "CODEX_REVIEW_BRIDGE_BLOCKED",
+                                                       "CODEX_REPAIR_BRIDGE_READY",
+                                                       "CODEX_REPAIR_BRIDGE_BLOCKED",
+                                                       "CODEX_L4_LOOP_READY",
+                                                       "CODEX_L4_LOOP_BLOCKED",
+                                                       "CODEX_BRIDGE_MANUAL_REQUIRED"
+                                                   ]
+                                      },
+                       "next_actor":  {
+                                          "type":  [
+                                                       "string",
+                                                       "null"
+                                                   ],
+                                          "enum":  [
+                                                       "chatgpt-baijin-reviewer",
+                                                       "claude-code",
+                                                       "human",
+                                                       "gate",
+                                                       null
+                                                   ]
+                                      },
+                       "candidate_commit":  {
+                                                "type":  [
+                                                             "string",
+                                                             "null"
+                                                         ],
+                                                "pattern":  "^[0-9a-f]{40}$"
+                                            },
+                       "review_commit":  {
+                                             "type":  [
+                                                          "string",
+                                                          "null"
+                                                      ],
+                                             "pattern":  "^[0-9a-f]{40}$"
+                                         },
+                       "repair_commit":  {
+                                             "type":  [
+                                                          "string",
+                                                          "null"
+                                                      ],
+                                             "pattern":  "^[0-9a-f]{40}$"
+                                         },
+                       "verdict":  {
+                                       "type":  [
+                                                    "string",
+                                                    "null"
+                                                ],
+                                       "enum":  [
+                                                    "approved",
+                                                    "changes_requested",
+                                                    "blocked",
+                                                    null
+                                                ]
+                                   },
+                       "gate_result":  {
+                                           "type":  [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                           "enum":  [
+                                                        "allowed",
+                                                        "denied",
+                                                        "blocked",
+                                                        "tool_error",
+                                                        null
+                                                    ]
+                                       },
+                       "repair_round":  {
+                                            "type":  "integer",
+                                            "minimum":  0,
+                                            "maximum":  10
+                                        },
+                       "events":  {
+                                      "type":  "array",
+                                      "items":  {
+                                                    "type":  "object",
+                                                    "required":  [
+                                                                     "event_type",
+                                                                     "actor"
+                                                                 ],
+                                                    "additionalProperties":  true,
+                                                    "properties":  {
+                                                                       "event_type":  {
+                                                                                          "type":  "string",
+                                                                                          "minLength":  1
+                                                                                      },
+                                                                       "actor":  {
+                                                                                     "type":  "string",
+                                                                                     "enum":  [
+                                                                                                  "codex",
+                                                                                                  "claude",
+                                                                                                  "chatgpt-reviewer",
+                                                                                                  "github-actions",
+                                                                                                  "gate",
+                                                                                                  "human",
+                                                                                                  "system"
+                                                                                              ]
+                                                                                 }
+                                                                   }
+                                                }
+                                  },
+                       "produced_files":  {
+                                              "type":  "array",
+                                              "items":  {
+                                                            "type":  "string"
+                                                        }
+                                          },
+                       "errors":  {
+                                      "type":  "array",
+                                      "items":  {
+                                                    "type":  "string"
+                                                }
+                                  },
+                       "created_at":  {
+                                          "type":  "string",
+                                          "format":  "date-time"
+                                      }
+                   }
+}
