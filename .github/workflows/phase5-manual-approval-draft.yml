@@ -1,0 +1,111 @@
+name: Phase5 Manual Approval Draft
+
+on:
+  workflow_dispatch:
+    inputs:
+      repository:
+        description: "Target repository"
+        required: true
+        default: "shunhang776/xinbaijin-mcp"
+        type: choice
+        options:
+          - "shunhang776/xinbaijin"
+          - "shunhang776/xinbaijin-mcp"
+      mode:
+        description: "Phase5 enablement mode"
+        required: true
+        default: "manual_gate"
+        type: choice
+        options:
+          - "draft"
+          - "manual_gate"
+      owner_approval:
+        description: "Owner approval"
+        required: true
+        default: false
+        type: boolean
+      gate_owner_approval:
+        description: "Gate owner approval"
+        required: true
+        default: false
+        type: boolean
+      rollback_owner_approval:
+        description: "Rollback owner approval"
+        required: true
+        default: false
+        type: boolean
+      rollback_plan_defined:
+        description: "Rollback plan defined"
+        required: true
+        default: false
+        type: boolean
+      audit_log_defined:
+        description: "Audit log defined"
+        required: true
+        default: false
+        type: boolean
+      protected_branch_rules_defined:
+        description: "Protected branch rules defined"
+        required: true
+        default: false
+        type: boolean
+      manual_required_process_defined:
+        description: "Manual required process defined"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  phase5-manual-approval-draft:
+    name: Phase5 manual approval draft
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate source tree
+        run: npm test
+
+      - name: Build Phase5 manual approval draft
+        run: |
+          node scripts/phase5/build-phase5-manual-approval.mjs \
+            --repository "${{ inputs.repository }}" \
+            --mode "${{ inputs.mode }}" \
+            --production-enabled "false" \
+            --target-mode "manual_gate" \
+            --owner-approval "${{ inputs.owner_approval }}" \
+            --gate-owner-approval "${{ inputs.gate_owner_approval }}" \
+            --rollback-owner-approval "${{ inputs.rollback_owner_approval }}" \
+            --rollback-plan-defined "${{ inputs.rollback_plan_defined }}" \
+            --audit-log-defined "${{ inputs.audit_log_defined }}" \
+            --protected-branch-rules-defined "${{ inputs.protected_branch_rules_defined }}" \
+            --manual-required-process-defined "${{ inputs.manual_required_process_defined }}" \
+            --enablement-id "phase5-enablement-manual-approval-draft-${{ github.run_id }}" \
+            --out-enablement "artifacts/phase5/phase5-enablement.json" \
+            --out-readiness "artifacts/phase5/phase5-readiness.json"
+
+      - name: Print Phase5 readiness summary
+        run: |
+          node -e "const fs=require('fs'); const r=JSON.parse(fs.readFileSync('artifacts/phase5/phase5-readiness.json','utf8')); console.log(JSON.stringify({status:r.status, ready_for_manual_gate:r.ready_for_manual_gate, ready_for_production:r.ready_for_production, blocker_count:r.blocker_count, blockers:r.blockers}, null, 2));"
+
+      - name: Upload Phase5 manual approval draft
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase5-manual-approval-draft
+          path: |
+            artifacts/phase5/phase5-enablement.json
+            artifacts/phase5/phase5-readiness.json
+          if-no-files-found: error
