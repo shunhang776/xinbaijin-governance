@@ -1,0 +1,24 @@
+﻿{
+    "protocol":  "baijin-l4-task-state/1.0",
+    "task_id":  "task-valid-001",
+    "repository":  "shunhang776/xinbaijin-mcp",
+    "branch":  "dev",
+    "state":  "WAIT_CODE",
+    "candidate_commit":  null,
+    "current_branch_head":  null,
+    "review_commit":  null,
+    "repair_commit":  null,
+    "verdict":  null,
+    "gate_result":  null,
+    "findings":  [
+
+                 ],
+    "required_checks":  [
+
+                        ],
+    "repair_round":  0,
+    "max_repair_round":  2,
+    "last_error":  null,
+    "created_at":  "2026-06-27T04:53:53.245Z",
+    "updated_at":  "2026-06-27T04:53:53.245Z"
+}
