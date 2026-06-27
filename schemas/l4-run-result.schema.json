@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baijin.local/schemas/l4-run-result.schema.json",
+  "title": "Baijin L4 Run Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "run_id",
+    "task_id",
+    "repository",
+    "branch",
+    "status",
+    "final_state",
+    "events",
+    "machine_events",
+    "task_state",
+    "errors",
+    "created_at"
+  ],
+  "properties": {
+    "protocol": {
+      "const": "baijin-l4-run-result/1.0"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository": {
+      "type": "string",
+      "enum": [
+        "shunhang776/xinbaijin",
+        "shunhang776/xinbaijin-mcp",
+        "shunhang776/xinbaijin-governance"
+      ]
+    },
+    "branch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "IN_PROGRESS",
+        "COMPLETED",
+        "MANUAL_REQUIRED",
+        "FAILED"
+      ]
+    },
+    "final_state": {
+      "type": "string",
+      "enum": [
+        "WAIT_CODE",
+        "CODE_SUBMITTED",
+        "CHECKS_RUNNING",
+        "WAIT_REVIEW",
+        "REVIEW_DENIED",
+        "REPAIR_REQUESTED",
+        "REPAIR_SUBMITTED",
+        "REVIEW_APPROVED",
+        "ACCEPTED",
+        "MANUAL_REQUIRED"
+      ]
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "event_type"
+        ],
+        "additionalProperties": true,
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "machine_events": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "CODE_DETECTED",
+          "CHECKS_STARTED",
+          "CHECKS_PASSED",
+          "CHECKS_FAILED",
+          "REVIEW_REQUESTED",
+          "REVIEW_DENIED",
+          "REVIEW_APPROVED",
+          "REVIEW_BLOCKED",
+          "REPAIR_REQUESTED",
+          "REPAIR_SUBMITTED",
+          "REPAIR_ROUND_EXCEEDED",
+          "REPEATED_FINDING_DETECTED",
+          "STALE_REVIEW_DETECTED",
+          "BRANCH_HEAD_CHANGED",
+          "GATE_ALLOWED",
+          "GATE_DENIED",
+          "TOOL_ERROR"
+        ]
+      }
+    },
+    "task_state": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}
