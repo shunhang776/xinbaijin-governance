@@ -1,0 +1,38 @@
+{
+  "protocol": "baijin-phase5-enablement/1.0",
+  "enablement_id": "phase5-enablement-draft-001",
+  "phase": "phase5",
+  "repository": "shunhang776/xinbaijin-mcp",
+  "branch": "dev",
+  "mode": "draft",
+  "production_enabled": false,
+  "reviewed_components": {
+    "chatgpt_review_integration": true,
+    "claude_repair_loop": true,
+    "gate_production_decision": true,
+    "l4_production_acceptance": true
+  },
+  "required_boundaries": {
+    "no_auto_merge_without_gate": true,
+    "no_auto_push_to_dev": true,
+    "no_submit_review_without_chatgpt": true,
+    "read_only_draft_workflows": true,
+    "rollback_plan_defined": false,
+    "audit_log_defined": false,
+    "protected_branch_rules_defined": false,
+    "manual_required_process_defined": false
+  },
+  "approvals": {
+    "owner_approval": false,
+    "gate_owner_approval": false,
+    "rollback_owner_approval": false
+  },
+  "source_documents": {
+    "chatgpt_review_acceptance": "docs/CHATGPT-REVIEW-INTEGRATION-ACCEPTANCE.md",
+    "claude_repair_acceptance": "docs/CLAUDE-REPAIR-LOOP-ACCEPTANCE.md",
+    "gate_acceptance": "docs/GATE-PRODUCTION-ACCEPTANCE.md",
+    "gate_boundary": "docs/GATE-PRODUCTION-ENABLEMENT-BOUNDARY.md",
+    "l4_production_acceptance": "docs/L4-PRODUCTION-ACCEPTANCE.md"
+  },
+  "created_at": "2026-06-27T00:00:00.000Z"
+}
