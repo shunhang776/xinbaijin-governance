@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baijin.local/schemas/l4-dry-run-artifact.schema.json",
+  "title": "Baijin L4 Dry Run Artifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "artifact_id",
+    "run_id",
+    "task_id",
+    "repository",
+    "branch",
+    "status",
+    "final_state",
+    "files",
+    "created_at"
+  ],
+  "properties": {
+    "protocol": {
+      "const": "baijin-l4-dry-run-artifact/1.0"
+    },
+    "artifact_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository": {
+      "type": "string",
+      "enum": [
+        "shunhang776/xinbaijin",
+        "shunhang776/xinbaijin-mcp",
+        "shunhang776/xinbaijin-governance"
+      ]
+    },
+    "branch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "IN_PROGRESS",
+        "COMPLETED",
+        "MANUAL_REQUIRED",
+        "FAILED"
+      ]
+    },
+    "final_state": {
+      "type": "string",
+      "enum": [
+        "WAIT_CODE",
+        "CODE_SUBMITTED",
+        "CHECKS_RUNNING",
+        "WAIT_REVIEW",
+        "REVIEW_DENIED",
+        "REPAIR_REQUESTED",
+        "REPAIR_SUBMITTED",
+        "REVIEW_APPROVED",
+        "ACCEPTED",
+        "MANUAL_REQUIRED"
+      ]
+    },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "path"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "pipeline_input",
+              "pipeline_output",
+              "run_result"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}
