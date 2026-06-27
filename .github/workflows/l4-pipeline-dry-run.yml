@@ -69,9 +69,16 @@ jobs:
             --run-result artifacts/l4/l4-run-result.json \
             --out "$GITHUB_STEP_SUMMARY"
 
+      - name: Build L4 dry-run PR comment draft
+        run: |
+          node scripts/l4/write-dry-run-pr-comment.mjs \
+            --artifact artifacts/l4/l4-dry-run-artifact.json \
+            --run-result artifacts/l4/l4-run-result.json \
+            --out artifacts/l4/l4-pr-comment.md
+
       - name: Verify L4 dry-run result
         run: |
-          node -e "const fs=require('fs'); const r=JSON.parse(fs.readFileSync('artifacts/l4/l4-run-result.json','utf8')); const a=JSON.parse(fs.readFileSync('artifacts/l4/l4-dry-run-artifact.json','utf8')); if (r.status !== 'COMPLETED' || r.final_state !== 'ACCEPTED') { console.error(r); process.exit(1); } if (a.status !== r.status || a.final_state !== r.final_state) { console.error(a); process.exit(1); } console.log(JSON.stringify({ ok: true, status: r.status, final_state: r.final_state, artifact_id: a.artifact_id }));"
+          node -e "const fs=require('fs'); const r=JSON.parse(fs.readFileSync('artifacts/l4/l4-run-result.json','utf8')); const a=JSON.parse(fs.readFileSync('artifacts/l4/l4-dry-run-artifact.json','utf8')); if (r.status !== 'COMPLETED' || r.final_state !== 'ACCEPTED') { console.error(r); process.exit(1); } if (a.status !== r.status || a.final_state !== r.final_state) { console.error(a); process.exit(1); } if (!fs.existsSync('artifacts/l4/l4-pr-comment.md')) { console.error('missing l4-pr-comment.md'); process.exit(1); } console.log(JSON.stringify({ ok: true, status: r.status, final_state: r.final_state, artifact_id: a.artifact_id }));"
 
       - name: Upload L4 dry-run artifacts
         uses: actions/upload-artifact@v4
