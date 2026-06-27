@@ -87,7 +87,8 @@
               "run_result",
               "bridge_result",
               "chatgpt_review_invocation",
-              "chatgpt_review_result"
+              "chatgpt_review_result",
+              "claude_repair_handoff"
             ]
           },
           "path": {

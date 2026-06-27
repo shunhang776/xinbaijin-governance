@@ -82,6 +82,10 @@ jobs:
             --invocation-id invocation-l4-dry-run-review-001 \
             --created-at 2026-06-27T00:00:00.000Z
 
+      - name: Build Claude repair handoff draft if needed
+        run: |
+          node -e "const fs=require('fs'); const cp=require('child_process'); const r=JSON.parse(fs.readFileSync('artifacts/l4/chatgpt-review-result.json','utf8')); if (r.verdict === 'changes_requested') { cp.execFileSync(process.execPath, ['scripts/l4/build-dry-run-repair-handoff.mjs','--review-result','artifacts/l4/chatgpt-review-result.json','--out','artifacts/l4/claude-repair-handoff.json','--handoff-id','claude-repair-handoff-l4-dry-run-001'], {stdio:'inherit'}); } else { console.log('No Claude repair handoff required for verdict=' + r.verdict); }"
+
       - name: Build L4 dry-run artifact manifest
         run: |
           node scripts/l4/build-dry-run-artifact.mjs \
