@@ -4,6 +4,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildCodexBridgeResult } from './bridge-adapter.mjs';
+import { buildChatGptReviewInvocation } from '../chatgpt/review-invocation.mjs';
 
 function readJson(path) {
   const raw = readFileSync(resolve(path), 'utf8').replace(/^\uFEFF/, '');
@@ -23,7 +24,9 @@ function parseArgs(argv) {
     request: null,
     out: null,
     result_id: null,
-    created_at: null
+    created_at: null,
+    review_invocation_out: null,
+    invocation_id: null
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -46,6 +49,16 @@ function parseArgs(argv) {
 
     if (key === '--created-at') {
       args.created_at = argv[++i];
+      continue;
+    }
+
+    if (key === '--review-invocation-out') {
+      args.review_invocation_out = argv[++i];
+      continue;
+    }
+
+    if (key === '--invocation-id') {
+      args.invocation_id = argv[++i];
       continue;
     }
 
@@ -74,7 +87,25 @@ export function runCodexBridgeCli(argv) {
 
   writeJson(args.out, result);
 
-  return result;
+  let reviewInvocation = null;
+
+  if (args.review_invocation_out) {
+    if (request.bridge_type !== 'review_bridge') {
+      throw new Error('--review-invocation-out requires review_bridge request');
+    }
+
+    reviewInvocation = buildChatGptReviewInvocation(request, {
+      invocation_id: args.invocation_id,
+      created_at: args.created_at
+    });
+
+    writeJson(args.review_invocation_out, reviewInvocation);
+  }
+
+  return {
+    result,
+    reviewInvocation
+  };
 }
 
 function isCliEntryPoint() {
@@ -87,12 +118,14 @@ function isCliEntryPoint() {
 
 if (isCliEntryPoint()) {
   try {
-    const result = runCodexBridgeCli(process.argv.slice(2));
+    const { result, reviewInvocation } = runCodexBridgeCli(process.argv.slice(2));
+
     process.stdout.write(JSON.stringify({
       ok: true,
       result_id: result.result_id,
       conclusion: result.conclusion,
-      status: result.status
+      status: result.status,
+      review_invocation_id: reviewInvocation ? reviewInvocation.invocation_id : null
     }) + '\n');
   } catch (error) {
     process.stderr.write(String(error && error.stack ? error.stack : error) + '\n');
