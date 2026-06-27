@@ -1,4 +1,4 @@
-﻿{
+{
     "protocol":  "baijin-l4-event/1.0",
     "event_id":  "event-invalid-bad-type",
     "task_id":  "task-valid-001",
