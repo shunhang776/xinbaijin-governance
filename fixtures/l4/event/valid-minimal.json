@@ -1,0 +1,16 @@
+﻿{
+    "protocol":  "baijin-l4-event/1.0",
+    "event_id":  "event-valid-001",
+    "task_id":  "task-valid-001",
+    "event_type":  "CODE_DETECTED",
+    "repository":  "shunhang776/xinbaijin-mcp",
+    "branch":  "dev",
+    "actor":  "codex",
+    "commit":  "0123456789abcdef0123456789abcdef01234567",
+    "review_commit":  null,
+    "repair_round":  0,
+    "payload":  {
+                    "note":  "valid event fixture"
+                },
+    "created_at":  "2026-06-27T04:53:53.245Z"
+}
