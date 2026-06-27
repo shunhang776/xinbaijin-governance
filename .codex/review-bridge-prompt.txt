@@ -1,0 +1,53 @@
+You are running Baijin Phase0 review bridge smoke test.
+
+Read .codex/review-bridge-request.json.
+
+Your task is NOT to review code.
+Your task is NOT to write review.json.
+Your task is NOT to call submit_review.
+
+Only write one file:
+.codex/review-bridge-observation.json
+
+The output file MUST be valid JSON.
+The output file MUST be ASCII-only.
+Do not echo Chinese trigger text. Use trigger_key instead.
+
+Required fields:
+protocol
+experiment
+codex_role
+target_repository
+target_branch
+trigger_key
+next_actor
+allowed_actions
+forbidden_actions
+observed_at
+conclusion
+
+Required values:
+protocol = baijin-codex-review-bridge-observation/1.0
+experiment = phase0-review-bridge
+codex_role = bridge
+target_repository = shunhang776/xinbaijin-mcp
+target_branch = dev
+trigger_key = REVIEW_MCP_LATEST_HANDOFF
+next_actor = chatgpt-baijin-reviewer
+conclusion = CODEX_REVIEW_BRIDGE_READY or CODEX_REVIEW_BRIDGE_BLOCKED
+
+Forbidden actions:
+Do not review code.
+Do not modify review.json.
+Do not modify schemas.
+Do not modify policies.
+Do not modify workflows.
+Do not commit.
+Do not push.
+Do not create PR.
+Do not merge PR.
+Do not decide approved.
+Do not bypass ChatGPT review.
+Do not bypass gate.
+
+After writing .codex/review-bridge-observation.json, stop.
