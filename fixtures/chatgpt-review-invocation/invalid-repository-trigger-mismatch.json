@@ -1,0 +1,11 @@
+{
+    "branch":  "dev",
+    "invocation_id":  "invocation-invalid-mismatch",
+    "candidate_commit":  "3333333333333333333333333333333333333333",
+    "trigger_key":  "REVIEW_CLAUDE_LATEST_HANDOFF",
+    "reviewer":  "chatgpt-baijin-reviewer",
+    "created_at":  "2026-06-27T00:00:00.000Z",
+    "exact_trigger_text":  "审查 Claude 最新交接",
+    "repository":  "shunhang776/xinbaijin-mcp",
+    "protocol":  "baijin-chatgpt-review-invocation/1.0"
+}

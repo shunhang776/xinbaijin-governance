@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baijin.local/schemas/chatgpt-review-invocation.schema.json",
+  "title": "Baijin ChatGPT Review Invocation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "invocation_id",
+    "repository",
+    "branch",
+    "candidate_commit",
+    "trigger_key",
+    "exact_trigger_text",
+    "reviewer",
+    "created_at"
+  ],
+  "properties": {
+    "protocol": {
+      "const": "baijin-chatgpt-review-invocation/1.0"
+    },
+    "invocation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository": {
+      "type": "string",
+      "enum": [
+        "shunhang776/xinbaijin",
+        "shunhang776/xinbaijin-mcp"
+      ]
+    },
+    "branch": {
+      "const": "dev"
+    },
+    "candidate_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "trigger_key": {
+      "type": "string",
+      "enum": [
+        "REVIEW_CLAUDE_LATEST_HANDOFF",
+        "REVIEW_MCP_LATEST_HANDOFF"
+      ]
+    },
+    "exact_trigger_text": {
+      "type": "string",
+      "enum": [
+        "审查 Claude 最新交接",
+        "审查 MCP 最新交接"
+      ]
+    },
+    "reviewer": {
+      "const": "chatgpt-baijin-reviewer"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "repository": {
+            "const": "shunhang776/xinbaijin"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "trigger_key": {
+            "const": "REVIEW_CLAUDE_LATEST_HANDOFF"
+          },
+          "exact_trigger_text": {
+            "const": "审查 Claude 最新交接"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "repository": {
+            "const": "shunhang776/xinbaijin-mcp"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "trigger_key": {
+            "const": "REVIEW_MCP_LATEST_HANDOFF"
+          },
+          "exact_trigger_text": {
+            "const": "审查 MCP 最新交接"
+          }
+        }
+      }
+    }
+  ]
+}
