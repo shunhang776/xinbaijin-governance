@@ -1,0 +1,253 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baijin.local/schemas/phase5-enablement.schema.json",
+  "title": "Baijin Phase5 Enablement",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "enablement_id",
+    "phase",
+    "repository",
+    "branch",
+    "mode",
+    "production_enabled",
+    "reviewed_components",
+    "required_boundaries",
+    "approvals",
+    "source_documents",
+    "created_at"
+  ],
+  "properties": {
+    "protocol": {
+      "const": "baijin-phase5-enablement/1.0"
+    },
+    "enablement_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "phase": {
+      "const": "phase5"
+    },
+    "repository": {
+      "type": "string",
+      "enum": [
+        "shunhang776/xinbaijin",
+        "shunhang776/xinbaijin-mcp"
+      ]
+    },
+    "branch": {
+      "const": "dev"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "manual_gate",
+        "production_enforcer"
+      ]
+    },
+    "production_enabled": {
+      "type": "boolean"
+    },
+    "reviewed_components": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chatgpt_review_integration",
+        "claude_repair_loop",
+        "gate_production_decision",
+        "l4_production_acceptance"
+      ],
+      "properties": {
+        "chatgpt_review_integration": {
+          "type": "boolean"
+        },
+        "claude_repair_loop": {
+          "type": "boolean"
+        },
+        "gate_production_decision": {
+          "type": "boolean"
+        },
+        "l4_production_acceptance": {
+          "type": "boolean"
+        }
+      }
+    },
+    "required_boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "no_auto_merge_without_gate",
+        "no_auto_push_to_dev",
+        "no_submit_review_without_chatgpt",
+        "read_only_draft_workflows",
+        "rollback_plan_defined",
+        "audit_log_defined",
+        "protected_branch_rules_defined",
+        "manual_required_process_defined"
+      ],
+      "properties": {
+        "no_auto_merge_without_gate": {
+          "type": "boolean"
+        },
+        "no_auto_push_to_dev": {
+          "type": "boolean"
+        },
+        "no_submit_review_without_chatgpt": {
+          "type": "boolean"
+        },
+        "read_only_draft_workflows": {
+          "type": "boolean"
+        },
+        "rollback_plan_defined": {
+          "type": "boolean"
+        },
+        "audit_log_defined": {
+          "type": "boolean"
+        },
+        "protected_branch_rules_defined": {
+          "type": "boolean"
+        },
+        "manual_required_process_defined": {
+          "type": "boolean"
+        }
+      }
+    },
+    "approvals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner_approval",
+        "gate_owner_approval",
+        "rollback_owner_approval"
+      ],
+      "properties": {
+        "owner_approval": {
+          "type": "boolean"
+        },
+        "gate_owner_approval": {
+          "type": "boolean"
+        },
+        "rollback_owner_approval": {
+          "type": "boolean"
+        }
+      }
+    },
+    "source_documents": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chatgpt_review_acceptance",
+        "claude_repair_acceptance",
+        "gate_acceptance",
+        "gate_boundary",
+        "l4_production_acceptance"
+      ],
+      "properties": {
+        "chatgpt_review_acceptance": {
+          "type": "string",
+          "minLength": 1
+        },
+        "claude_repair_acceptance": {
+          "type": "string",
+          "minLength": 1
+        },
+        "gate_acceptance": {
+          "type": "string",
+          "minLength": 1
+        },
+        "gate_boundary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "l4_production_acceptance": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "production_enabled": {
+            "const": true
+          }
+        },
+        "required": [
+          "production_enabled"
+        ]
+      },
+      "then": {
+        "properties": {
+          "mode": {
+            "const": "production_enforcer"
+          },
+          "reviewed_components": {
+            "properties": {
+              "chatgpt_review_integration": {
+                "const": true
+              },
+              "claude_repair_loop": {
+                "const": true
+              },
+              "gate_production_decision": {
+                "const": true
+              },
+              "l4_production_acceptance": {
+                "const": true
+              }
+            }
+          },
+          "required_boundaries": {
+            "properties": {
+              "no_auto_merge_without_gate": {
+                "const": true
+              },
+              "no_auto_push_to_dev": {
+                "const": true
+              },
+              "no_submit_review_without_chatgpt": {
+                "const": true
+              },
+              "read_only_draft_workflows": {
+                "const": true
+              },
+              "rollback_plan_defined": {
+                "const": true
+              },
+              "audit_log_defined": {
+                "const": true
+              },
+              "protected_branch_rules_defined": {
+                "const": true
+              },
+              "manual_required_process_defined": {
+                "const": true
+              }
+            }
+          },
+          "approvals": {
+            "properties": {
+              "owner_approval": {
+                "const": true
+              },
+              "gate_owner_approval": {
+                "const": true
+              },
+              "rollback_owner_approval": {
+                "const": true
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
