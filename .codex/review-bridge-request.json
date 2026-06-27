@@ -1,0 +1,32 @@
+{
+    "protocol":  "baijin-codex-review-bridge-request/1.0",
+    "experiment":  "phase0-review-bridge",
+    "codex_role":  "bridge",
+    "target_repository":  "shunhang776/xinbaijin-mcp",
+    "target_repository_key":  "xinbaijin-mcp",
+    "target_branch":  "dev",
+    "chatgpt_project":  "白槿代码审查器",
+    "trigger":  "审查 MCP 最新交接",
+    "expected_next_actor":  "ChatGPT 白槿审查器",
+    "expected_chatgpt_actions":  [
+                                     "get_latest_handoff",
+                                     "get_patch",
+                                     "get_file_content when required",
+                                     "submit_review",
+                                     "readback review.json"
+                                 ],
+    "forbidden_actions":  [
+                              "Codex must not review code by itself",
+                              "Codex must not write review.json",
+                              "Codex must not call submit_review",
+                              "Codex must not decide approved",
+                              "Codex must not bypass ChatGPT review",
+                              "Codex must not bypass gate"
+                          ],
+    "success_criteria":  [
+                             "Codex can identify the target repository",
+                             "Codex can identify the exact ChatGPT trigger phrase",
+                             "Codex can prepare a review bridge request",
+                             "Codex can stop before performing ChatGPT\u0027s review role"
+                         ]
+}

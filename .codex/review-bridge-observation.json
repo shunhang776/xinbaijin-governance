@@ -1,0 +1,33 @@
+{
+  "protocol": "baijin-codex-review-bridge-observation/1.0",
+  "experiment": "phase0-review-bridge",
+  "codex_role": "bridge",
+  "target_repository": "shunhang776/xinbaijin-mcp",
+  "target_branch": "dev",
+  "trigger_key": "REVIEW_MCP_LATEST_HANDOFF",
+  "next_actor": "chatgpt-baijin-reviewer",
+  "allowed_actions": [
+    "read .codex/review-bridge-request.json",
+    "identify target repository",
+    "identify trigger_key",
+    "write .codex/review-bridge-observation.json",
+    "stop before ChatGPT review role"
+  ],
+  "forbidden_actions": [
+    "review code",
+    "modify review.json",
+    "modify schemas",
+    "modify policies",
+    "modify workflows",
+    "commit",
+    "push",
+    "create PR",
+    "merge PR",
+    "decide approved",
+    "bypass ChatGPT review",
+    "bypass gate",
+    "call submit_review"
+  ],
+  "observed_at": "2026-06-27T13:37:42.8366583+08:00",
+  "conclusion": "CODEX_REVIEW_BRIDGE_READY"
+}
