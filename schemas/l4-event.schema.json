@@ -73,7 +73,8 @@
         "github-actions",
         "gate",
         "human",
-        "system"
+        "system",
+        "claude-code"
       ]
     },
     "commit": {
