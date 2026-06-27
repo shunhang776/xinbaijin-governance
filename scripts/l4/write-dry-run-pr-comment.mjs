@@ -9,10 +9,6 @@ function readJson(path) {
   return JSON.parse(raw);
 }
 
-function writeText(path, value) {
-  writeFileSync(resolve(path), value, 'utf8');
-}
-
 function parseArgs(argv) {
   const args = {
     artifact: null,
@@ -91,7 +87,7 @@ export function runWriteDryRunPrCommentCli(argv) {
   const runResult = readJson(args.run_result);
   const comment = buildDryRunPrComment(artifact, runResult);
 
-  writeText(args.out, comment);
+  writeFileSync(resolve(args.out), comment, 'utf8');
 
   return {
     artifact,
