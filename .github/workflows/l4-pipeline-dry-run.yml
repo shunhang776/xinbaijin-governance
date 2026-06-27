@@ -1,0 +1,62 @@
+name: L4 Pipeline Dry Run
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "src/l4/**"
+      - "src/codex/**"
+      - "schemas/**"
+      - "fixtures/**"
+      - "scripts/l4/**"
+      - "test/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/l4-pipeline-dry-run.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  l4-pipeline-dry-run:
+    name: L4 pipeline dry-run
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build L4 dry-run input
+        run: |
+          mkdir -p artifacts/l4
+          node scripts/l4/build-dry-run-input.mjs --out artifacts/l4/l4-pipeline-input.json
+
+      - name: Run L4 pipeline CLI
+        run: |
+          node src/l4/l4-pipeline-cli.mjs \
+            --input artifacts/l4/l4-pipeline-input.json \
+            --out artifacts/l4/l4-run-result.json \
+            --pipeline-out artifacts/l4/l4-pipeline-output.json
+
+      - name: Verify L4 dry-run result
+        run: |
+          node -e "const fs=require('fs'); const r=JSON.parse(fs.readFileSync('artifacts/l4/l4-run-result.json','utf8')); if (r.status !== 'COMPLETED' || r.final_state !== 'ACCEPTED') { console.error(r); process.exit(1); } console.log(JSON.stringify({ ok: true, status: r.status, final_state: r.final_state }));"
+
+      - name: Upload L4 dry-run artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: l4-pipeline-dry-run
+          path: artifacts/l4/
+          if-no-files-found: error
