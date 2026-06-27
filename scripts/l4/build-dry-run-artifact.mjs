@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -22,7 +22,9 @@ function parseArgs(argv) {
     run_result_path: 'artifacts/l4/l4-run-result.json',
     bridge_result_path: 'artifacts/l4/codex-bridge-result.json',
     review_invocation_path: 'artifacts/l4/chatgpt-review-invocation.json',
-    review_result_path: 'artifacts/l4/chatgpt-review-result.json'
+    review_result_path: 'artifacts/l4/chatgpt-review-result.json',
+    repair_handoff_path: 'artifacts/l4/claude-repair-handoff.json',
+    gate_decision_path: 'artifacts/l4/gate-production-decision.json'
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -63,6 +65,21 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (key === '--review-result-path') {
+      args.review_result_path = argv[++i];
+      continue;
+    }
+
+    if (key === '--repair-handoff-path') {
+      args.repair_handoff_path = argv[++i];
+      continue;
+    }
+
+    if (key === '--gate-decision-path') {
+      args.gate_decision_path = argv[++i];
+      continue;
+    }
+
     throw new Error('unknown argument: ' + key);
   }
 
@@ -77,7 +94,40 @@ function parseArgs(argv) {
   return args;
 }
 
+function maybePushFile(files, kind, path) {
+  if (path && existsSync(resolve(path))) {
+    files.push({ kind, path });
+  }
+}
+
 export function buildDryRunArtifact(runResult, options = {}) {
+  const files = [
+    {
+      kind: 'pipeline_input',
+      path: options.input_path || 'artifacts/l4/l4-pipeline-input.json'
+    },
+    {
+      kind: 'pipeline_output',
+      path: options.output_path || 'artifacts/l4/l4-pipeline-output.json'
+    },
+    {
+      kind: 'run_result',
+      path: options.run_result_path || 'artifacts/l4/l4-run-result.json'
+    },
+    {
+      kind: 'bridge_result',
+      path: options.bridge_result_path || 'artifacts/l4/codex-bridge-result.json'
+    },
+    {
+      kind: 'chatgpt_review_invocation',
+      path: options.review_invocation_path || 'artifacts/l4/chatgpt-review-invocation.json'
+    }
+  ];
+
+  maybePushFile(files, 'chatgpt_review_result', options.review_result_path || 'artifacts/l4/chatgpt-review-result.json');
+  maybePushFile(files, 'claude_repair_handoff', options.repair_handoff_path || 'artifacts/l4/claude-repair-handoff.json');
+  maybePushFile(files, 'gate_production_decision', options.gate_decision_path || 'artifacts/l4/gate-production-decision.json');
+
   return {
     protocol: 'baijin-l4-dry-run-artifact/1.0',
     artifact_id: options.artifact_id || 'artifact-' + runResult.run_id,
@@ -87,28 +137,7 @@ export function buildDryRunArtifact(runResult, options = {}) {
     branch: runResult.branch,
     status: runResult.status,
     final_state: runResult.final_state,
-    files: [
-      {
-        kind: 'pipeline_input',
-        path: options.input_path || 'artifacts/l4/l4-pipeline-input.json'
-      },
-      {
-        kind: 'pipeline_output',
-        path: options.output_path || 'artifacts/l4/l4-pipeline-output.json'
-      },
-      {
-        kind: 'run_result',
-        path: options.run_result_path || 'artifacts/l4/l4-run-result.json'
-      },
-      {
-        kind: 'bridge_result',
-        path: options.bridge_result_path || 'artifacts/l4/codex-bridge-result.json'
-      },
-      {
-        kind: 'chatgpt_review_invocation',
-        path: options.review_invocation_path || 'artifacts/l4/chatgpt-review-invocation.json'
-      }
-    ],
+    files,
     created_at: options.created_at || runResult.created_at || new Date().toISOString()
   };
 }
@@ -123,7 +152,9 @@ export function runBuildDryRunArtifactCli(argv) {
     run_result_path: args.run_result_path,
     bridge_result_path: args.bridge_result_path,
     review_invocation_path: args.review_invocation_path,
-    review_result_path: args.review_result_path
+    review_result_path: args.review_result_path,
+    repair_handoff_path: args.repair_handoff_path,
+    gate_decision_path: args.gate_decision_path
   });
 
   writeJson(args.out, artifact);
