@@ -1,0 +1,77 @@
+{
+  "protocol": "baijin-codex-l4-loop-smoke-input/1.0",
+  "experiment": "phase0-l4-loop-smoke",
+  "codex_role": "bridge",
+  "target_repository": "shunhang776/xinbaijin-mcp",
+  "target_branch": "dev",
+  "objective": "validate codex can bridge L4 review-repair-review loop without taking reviewer or gate role",
+  "simulated_flow": [
+    {
+      "step": 1,
+      "event": "CODE_DETECTED",
+      "candidate_commit": "1111111111111111111111111111111111111111"
+    },
+    {
+      "step": 2,
+      "event": "REVIEW_BRIDGE_REQUESTED",
+      "trigger_key": "REVIEW_MCP_LATEST_HANDOFF",
+      "next_actor": "chatgpt-baijin-reviewer"
+    },
+    {
+      "step": 3,
+      "event": "REVIEW_DENIED",
+      "verdict": "changes_requested",
+      "review_commit": "2222222222222222222222222222222222222222",
+      "findings": [
+        {
+          "severity": "medium",
+          "file": "worker.js",
+          "line": 1,
+          "title": "phase0 l4 loop sample finding",
+          "recommendation": "bridge this finding to claude-code for repair"
+        }
+      ]
+    },
+    {
+      "step": 4,
+      "event": "REPAIR_BRIDGE_REQUESTED",
+      "next_actor": "claude-code",
+      "repair_round": 1
+    },
+    {
+      "step": 5,
+      "event": "REPAIR_SUBMITTED",
+      "repair_commit": "3333333333333333333333333333333333333333"
+    },
+    {
+      "step": 6,
+      "event": "RE_REVIEW_BRIDGE_REQUESTED",
+      "trigger_key": "REVIEW_MCP_LATEST_HANDOFF",
+      "next_actor": "chatgpt-baijin-reviewer"
+    },
+    {
+      "step": 7,
+      "event": "REVIEW_APPROVED",
+      "verdict": "approved",
+      "review_commit": "4444444444444444444444444444444444444444"
+    },
+    {
+      "step": 8,
+      "event": "GATE_ALLOWED",
+      "gate_result": "allowed"
+    }
+  ],
+  "required_conclusion": "CODEX_L4_LOOP_SMOKE_READY",
+  "forbidden_actions": [
+    "do not review code",
+    "do not modify code",
+    "do not modify review.json",
+    "do not call submit_review",
+    "do not decide approved",
+    "do not bypass ChatGPT review",
+    "do not bypass gate",
+    "do not commit",
+    "do not push",
+    "do not create PR"
+  ]
+}

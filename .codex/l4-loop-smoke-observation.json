@@ -1,0 +1,82 @@
+{
+  "protocol": "baijin-codex-l4-loop-smoke-observation/1.0",
+  "experiment": "phase0-l4-loop-smoke",
+  "codex_role": "bridge",
+  "target_repository": "shunhang776/xinbaijin-mcp",
+  "target_branch": "dev",
+  "observed_flow": [
+    {
+      "step": 1,
+      "event": "CODE_DETECTED",
+      "candidate_commit": "1111111111111111111111111111111111111111"
+    },
+    {
+      "step": 2,
+      "event": "REVIEW_BRIDGE_REQUESTED",
+      "trigger_key": "REVIEW_MCP_LATEST_HANDOFF",
+      "next_actor": "chatgpt-baijin-reviewer"
+    },
+    {
+      "step": 3,
+      "event": "REVIEW_DENIED",
+      "verdict": "changes_requested",
+      "review_commit": "2222222222222222222222222222222222222222",
+      "finding_count": 1
+    },
+    {
+      "step": 4,
+      "event": "REPAIR_BRIDGE_REQUESTED",
+      "next_actor": "claude-code",
+      "repair_round": 1
+    },
+    {
+      "step": 5,
+      "event": "REPAIR_SUBMITTED",
+      "repair_commit": "3333333333333333333333333333333333333333"
+    },
+    {
+      "step": 6,
+      "event": "RE_REVIEW_BRIDGE_REQUESTED",
+      "trigger_key": "REVIEW_MCP_LATEST_HANDOFF",
+      "next_actor": "chatgpt-baijin-reviewer"
+    },
+    {
+      "step": 7,
+      "event": "REVIEW_APPROVED",
+      "verdict": "approved",
+      "review_commit": "4444444444444444444444444444444444444444"
+    },
+    {
+      "step": 8,
+      "event": "GATE_ALLOWED",
+      "gate_result": "allowed"
+    }
+  ],
+  "bridge_points": [
+    "review bridge to chatgpt-baijin-reviewer",
+    "repair bridge to claude-code",
+    "re-review bridge to chatgpt-baijin-reviewer"
+  ],
+  "stop_conditions": [
+    "approved and gate allowed",
+    "blocked",
+    "stale review",
+    "branch head changed",
+    "repair_round exceeded",
+    "repeated finding"
+  ],
+  "forbidden_actions": [
+    "do not review code",
+    "do not modify code",
+    "do not modify review.json",
+    "do not call submit_review",
+    "do not decide approved",
+    "do not bypass ChatGPT review",
+    "do not bypass gate",
+    "do not commit",
+    "do not push",
+    "do not create PR"
+  ],
+  "observed_at": "2026-06-27T14:00:13.3074776+08:00",
+  "conclusion": "CODEX_L4_LOOP_SMOKE_READY"
+}

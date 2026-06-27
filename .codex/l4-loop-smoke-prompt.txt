@@ -1,0 +1,51 @@
+You are running Baijin Phase0 L4 loop smoke test.
+
+Read .codex/l4-loop-smoke-input.json.
+
+Your task is NOT to review code.
+Your task is NOT to modify code.
+Your task is NOT to write review.json.
+Your task is NOT to call submit_review.
+Your task is NOT to commit, push, create PR, or merge PR.
+
+Only write one file:
+.codex/l4-loop-smoke-observation.json
+
+The output file MUST be valid JSON.
+The output file MUST be ASCII-only.
+
+Required fields:
+protocol
+experiment
+codex_role
+target_repository
+target_branch
+observed_flow
+bridge_points
+stop_conditions
+forbidden_actions
+observed_at
+conclusion
+
+Required values:
+protocol = baijin-codex-l4-loop-smoke-observation/1.0
+experiment = phase0-l4-loop-smoke
+codex_role = bridge
+target_repository = shunhang776/xinbaijin-mcp
+target_branch = dev
+conclusion = CODEX_L4_LOOP_SMOKE_READY or CODEX_L4_LOOP_SMOKE_BLOCKED
+
+bridge_points must include:
+review bridge to chatgpt-baijin-reviewer
+repair bridge to claude-code
+re-review bridge to chatgpt-baijin-reviewer
+
+stop_conditions must include:
+approved and gate allowed
+blocked
+stale review
+branch head changed
+repair_round exceeded
+repeated finding
+
+After writing .codex/l4-loop-smoke-observation.json, stop.
