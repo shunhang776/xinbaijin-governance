@@ -1,0 +1,49 @@
+{
+  "protocol": "baijin-codex-bridge-observation/1.0",
+  "repository": "shunhang776/xinbaijin-governance",
+  "branch": "phase0/codex-bridge-smoke-test-20260627-130841",
+  "head_commit": "092ad6b4f5a937e3568d5bf7152a925dc234da71",
+  "pr_number": 25,
+  "pr_state": "OPEN",
+  "checks_summary": {
+    "state": "SUCCESS",
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "pending": 0,
+    "checks": [
+      {
+        "name": "governance",
+        "workflow": "governance-ci",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "started_at": "2026-06-27T05:09:14Z",
+        "completed_at": "2026-06-27T05:09:41Z",
+        "details_url": "https://github.com/shunhang776/xinbaijin-governance/actions/runs/28279473180/job/83792294120"
+      }
+    ]
+  },
+  "codex_role": "bridge",
+  "allowed_actions": [
+    "read .codex/bridge-task.json",
+    "identify repository, branch and HEAD commit",
+    "identify current PR information",
+    "identify GitHub checks status",
+    "write .codex/bridge-observation.json"
+  ],
+  "forbidden_actions": [
+    "do not approve by itself",
+    "do not modify review.json",
+    "do not modify schemas",
+    "do not modify policies",
+    "do not modify workflows",
+    "do not bypass ChatGPT review",
+    "do not bypass gate",
+    "do not commit",
+    "do not push",
+    "do not create PR",
+    "do not push directly to protected branch"
+  ],
+  "observed_at": "2026-06-27T13:20:13.3878514+08:00",
+  "conclusion": "CODEX_BRIDGE_SMOKE_READY"
+}

@@ -1,0 +1,47 @@
+你是白槿 Codex 桥接器烟测执行者。
+
+你的任务不是审查代码，也不是修改业务代码。
+
+请读取当前仓库中的 .codex/bridge-task.json。
+
+然后只做以下事情：
+
+1. 识别当前 Git 仓库名。
+2. 识别当前分支。
+3. 识别当前 HEAD commit。
+4. 识别当前 PR 信息。
+5. 识别 GitHub checks 状态。
+6. 判断当前任务是否符合 Phase0 Codex 桥接器烟测。
+7. 生成 .codex/bridge-observation.json。
+
+禁止事项：
+
+- 不要修改 review.json。
+- 不要修改 schemas。
+- 不要修改 policies。
+- 不要修改 workflows。
+- 不要提交 commit。
+- 不要 push。
+- 不要创建 PR。
+- 不要宣布 approved。
+- 不要绕过 ChatGPT 审查或 gate。
+
+输出文件 .codex/bridge-observation.json 必须包含：
+
+- protocol
+- repository
+- branch
+- head_commit
+- pr_number
+- pr_state
+- checks_summary
+- codex_role
+- allowed_actions
+- forbidden_actions
+- observed_at
+- conclusion
+
+conclusion 只能写：
+
+- CODEX_BRIDGE_SMOKE_READY
+- CODEX_BRIDGE_SMOKE_BLOCKED
