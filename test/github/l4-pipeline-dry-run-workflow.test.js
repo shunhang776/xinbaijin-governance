@@ -26,6 +26,8 @@ describe('L4 pipeline dry-run workflow', () => {
     expect(workflow).toContain('artifacts/l4/l4-run-result.json');
     expect(workflow).toContain('scripts/l4/write-dry-run-summary.mjs');
     expect(workflow).toContain('GITHUB_STEP_SUMMARY');
+    expect(workflow).toContain('scripts/l4/write-dry-run-pr-comment.mjs');
+    expect(workflow).toContain('artifacts/l4/l4-pr-comment.md');
     expect(workflow).toContain('actions/upload-artifact@v4');
   });
 
@@ -36,6 +38,8 @@ describe('L4 pipeline dry-run workflow', () => {
     expect(workflow).not.toContain('contents: write');
     expect(workflow).not.toContain('git push');
     expect(workflow).not.toContain('gh pr merge');
+    expect(workflow).not.toContain('pull-requests: write');
+    expect(workflow).not.toContain('gh pr comment');
     expect(workflow).not.toContain('submit_review');
   });
 });
