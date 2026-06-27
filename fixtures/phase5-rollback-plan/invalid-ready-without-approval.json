@@ -1,0 +1,43 @@
+{
+  "protocol": "baijin-phase5-rollback-plan/1.0",
+  "rollback_plan_id": "phase5-rollback-plan-invalid-ready-without-approval",
+  "phase": "phase5",
+  "repository": "shunhang776/xinbaijin-mcp",
+  "branch": "dev",
+  "mode": "manual_ready",
+  "rollback_ready": true,
+  "rollback_scope": "full_l4_loop",
+  "rollback_triggers": [
+    "operator_requested"
+  ],
+  "rollback_steps": [
+    {
+      "order": 1,
+      "action": "Disable Phase5 production enforcer mode.",
+      "owner": "rollback_owner",
+      "requires_manual_confirmation": true
+    }
+  ],
+  "verification_checks": [
+    {
+      "name": "phase5_disabled",
+      "expected": "production_enabled is false"
+    }
+  ],
+  "owners": {
+    "rollback_owner": "owner",
+    "gate_owner": "owner",
+    "repository_owner": "owner"
+  },
+  "approvals": {
+    "rollback_owner_approved": true,
+    "gate_owner_approved": false,
+    "repository_owner_approved": true
+  },
+  "source_documents": {
+    "phase5_enablement": "schemas/phase5-enablement.schema.json",
+    "l4_production_acceptance": "docs/L4-PRODUCTION-ACCEPTANCE.md",
+    "gate_enablement_boundary": "docs/GATE-PRODUCTION-ENABLEMENT-BOUNDARY.md"
+  },
+  "created_at": "2026-06-27T00:00:00.000Z"
+}
