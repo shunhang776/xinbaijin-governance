@@ -23,6 +23,9 @@ describe('L4 pipeline dry-run workflow', () => {
     expect(workflow).toContain('npm test');
     expect(workflow).toContain('scripts/l4/build-dry-run-input.mjs');
     expect(workflow).toContain('src/l4/l4-pipeline-cli.mjs');
+    expect(workflow).toContain('src/codex/bridge-cli.mjs');
+    expect(workflow).toContain('artifacts/l4/codex-bridge-result.json');
+    expect(workflow).toContain('artifacts/l4/chatgpt-review-invocation.json');
     expect(workflow).toContain('artifacts/l4/l4-run-result.json');
     expect(workflow).toContain('scripts/l4/write-dry-run-summary.mjs');
     expect(workflow).toContain('GITHUB_STEP_SUMMARY');

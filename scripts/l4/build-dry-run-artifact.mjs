@@ -19,7 +19,9 @@ function parseArgs(argv) {
     out: null,
     input_path: 'artifacts/l4/l4-pipeline-input.json',
     output_path: 'artifacts/l4/l4-pipeline-output.json',
-    run_result_path: 'artifacts/l4/l4-run-result.json'
+    run_result_path: 'artifacts/l4/l4-run-result.json',
+    bridge_result_path: 'artifacts/l4/codex-bridge-result.json',
+    review_invocation_path: 'artifacts/l4/chatgpt-review-invocation.json'
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -47,6 +49,16 @@ function parseArgs(argv) {
 
     if (key === '--run-result-path') {
       args.run_result_path = argv[++i];
+      continue;
+    }
+
+    if (key === '--bridge-result-path') {
+      args.bridge_result_path = argv[++i];
+      continue;
+    }
+
+    if (key === '--review-invocation-path') {
+      args.review_invocation_path = argv[++i];
       continue;
     }
 
@@ -86,6 +98,14 @@ export function buildDryRunArtifact(runResult, options = {}) {
       {
         kind: 'run_result',
         path: options.run_result_path || 'artifacts/l4/l4-run-result.json'
+      },
+      {
+        kind: 'bridge_result',
+        path: options.bridge_result_path || 'artifacts/l4/codex-bridge-result.json'
+      },
+      {
+        kind: 'chatgpt_review_invocation',
+        path: options.review_invocation_path || 'artifacts/l4/chatgpt-review-invocation.json'
       }
     ],
     created_at: options.created_at || runResult.created_at || new Date().toISOString()
@@ -99,7 +119,9 @@ export function runBuildDryRunArtifactCli(argv) {
   const artifact = buildDryRunArtifact(runResult, {
     input_path: args.input_path,
     output_path: args.output_path,
-    run_result_path: args.run_result_path
+    run_result_path: args.run_result_path,
+    bridge_result_path: args.bridge_result_path,
+    review_invocation_path: args.review_invocation_path
   });
 
   writeJson(args.out, artifact);
@@ -121,7 +143,8 @@ if (isCliEntryPoint()) {
       ok: true,
       artifact_id: artifact.artifact_id,
       status: artifact.status,
-      final_state: artifact.final_state
+      final_state: artifact.final_state,
+      file_count: artifact.files.length
     }) + '\n');
   } catch (error) {
     process.stderr.write(String(error && error.stack ? error.stack : error) + '\n');
