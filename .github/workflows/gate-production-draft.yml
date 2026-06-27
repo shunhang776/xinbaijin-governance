@@ -1,0 +1,63 @@
+name: Gate Production Draft
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_result_path:
+        description: "Path to l4-run-result.json"
+        required: true
+        default: "artifacts/l4/l4-run-result.json"
+      review_result_path:
+        description: "Path to chatgpt-review-result.json"
+        required: true
+        default: "artifacts/l4/chatgpt-review-result.json"
+      decision_out:
+        description: "Path to write gate-production-decision.json"
+        required: true
+        default: "artifacts/gate/gate-production-decision.json"
+
+permissions:
+  contents: read
+
+jobs:
+  gate-production-draft:
+    name: Gate production draft
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate source tree
+        run: npm test
+
+      - name: Prepare gate artifacts directory
+        run: mkdir -p "$(dirname '${{ inputs.decision_out }}')"
+
+      - name: Build Gate production decision draft
+        run: |
+          node scripts/l4/build-dry-run-gate-decision.mjs \
+            --run-result "${{ inputs.run_result_path }}" \
+            --review-result "${{ inputs.review_result_path }}" \
+            --out "${{ inputs.decision_out }}" \
+            --decision-id gate-production-decision-manual-draft-${{ github.run_id }}
+
+      - name: Print Gate production decision summary
+        run: |
+          node -e "const fs=require('fs'); const p='${{ inputs.decision_out }}'; const d=JSON.parse(fs.readFileSync(p,'utf8')); console.log(JSON.stringify({decision:d.decision, reason_code:d.reason_code, repository:d.repository, branch:d.branch, reviewed_commit:d.reviewed_commit}, null, 2));"
+
+      - name: Upload Gate production decision draft
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-production-decision-draft
+          path: ${{ inputs.decision_out }}
+          if-no-files-found: error
