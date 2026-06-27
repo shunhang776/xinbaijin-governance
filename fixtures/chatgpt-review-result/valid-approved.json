@@ -1,0 +1,26 @@
+{
+  "protocol": "baijin-chatgpt-review-result/1.0",
+  "result_id": "chatgpt-review-result-approved-001",
+  "invocation_id": "invocation-mcp-001",
+  "repository": "shunhang776/xinbaijin-mcp",
+  "branch": "dev",
+  "status": "review_submitted",
+  "reviewed_commit": "1111111111111111111111111111111111111111",
+  "based_on_branch_head": "1111111111111111111111111111111111111111",
+  "review_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "verdict": "approved",
+  "findings": [],
+  "readback": {
+    "verified": true,
+    "reviewed_commit_matches": true,
+    "based_on_branch_head_matches": true,
+    "verdict_matches": true,
+    "findings_match": true,
+    "utf8_valid": true,
+    "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "byte_length": 512,
+    "line_ending": "LF",
+    "final_newline": true
+  },
+  "created_at": "2026-06-27T00:00:00.000Z"
+}

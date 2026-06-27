@@ -1,0 +1,206 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baijin.local/schemas/chatgpt-review-result.schema.json",
+  "title": "Baijin ChatGPT Review Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "result_id",
+    "invocation_id",
+    "repository",
+    "branch",
+    "status",
+    "reviewed_commit",
+    "based_on_branch_head",
+    "review_commit",
+    "verdict",
+    "findings",
+    "readback",
+    "created_at"
+  ],
+  "properties": {
+    "protocol": {
+      "const": "baijin-chatgpt-review-result/1.0"
+    },
+    "result_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "invocation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository": {
+      "type": "string",
+      "enum": [
+        "shunhang776/xinbaijin",
+        "shunhang776/xinbaijin-mcp"
+      ]
+    },
+    "branch": {
+      "const": "dev"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "review_submitted",
+        "blocked",
+        "skipped_no_new_code"
+      ]
+    },
+    "reviewed_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "based_on_branch_head": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "review_commit": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "approved",
+        "changes_requested",
+        "blocked"
+      ]
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "severity",
+          "file",
+          "line",
+          "title",
+          "description",
+          "recommendation"
+        ],
+        "properties": {
+          "severity": {
+            "type": "string",
+            "minLength": 1
+          },
+          "file": {
+            "type": "string",
+            "minLength": 1
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "recommendation": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "readback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verified",
+        "reviewed_commit_matches",
+        "based_on_branch_head_matches",
+        "verdict_matches",
+        "findings_match",
+        "utf8_valid",
+        "sha256",
+        "byte_length",
+        "line_ending",
+        "final_newline"
+      ],
+      "properties": {
+        "verified": {
+          "type": "boolean"
+        },
+        "reviewed_commit_matches": {
+          "type": "boolean"
+        },
+        "based_on_branch_head_matches": {
+          "type": "boolean"
+        },
+        "verdict_matches": {
+          "type": "boolean"
+        },
+        "findings_match": {
+          "type": "boolean"
+        },
+        "utf8_valid": {
+          "type": "boolean"
+        },
+        "sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "byte_length": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "line_ending": {
+          "enum": [
+            "LF",
+            "CRLF",
+            "MIXED",
+            "NONE",
+            "UNKNOWN",
+            null
+          ]
+        },
+        "final_newline": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "review_submitted"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "review_commit": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{40}$"
+          }
+        }
+      }
+    }
+  ]
+}
