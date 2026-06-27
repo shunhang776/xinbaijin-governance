@@ -1,0 +1,253 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baijin.local/schemas/gate-production-decision.schema.json",
+  "title": "Baijin Gate Production Decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "decision_id",
+    "task_id",
+    "run_id",
+    "repository",
+    "branch",
+    "candidate_commit",
+    "reviewed_commit",
+    "review_commit",
+    "chatgpt_review_result_id",
+    "l4_run_result_id",
+    "review_verdict",
+    "l4_final_state",
+    "decision",
+    "reason_code",
+    "required_conditions",
+    "source_artifacts",
+    "created_at"
+  ],
+  "properties": {
+    "protocol": {
+      "const": "baijin-gate-production-decision/1.0"
+    },
+    "decision_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository": {
+      "type": "string",
+      "enum": [
+        "shunhang776/xinbaijin",
+        "shunhang776/xinbaijin-mcp"
+      ]
+    },
+    "branch": {
+      "const": "dev"
+    },
+    "candidate_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "reviewed_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "review_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "chatgpt_review_result_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "l4_run_result_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "review_verdict": {
+      "type": "string",
+      "enum": [
+        "approved",
+        "changes_requested",
+        "blocked"
+      ]
+    },
+    "l4_final_state": {
+      "type": "string",
+      "enum": [
+        "ACCEPTED",
+        "MANUAL_REQUIRED",
+        "WAIT_CODE",
+        "CHECKS_RUNNING",
+        "WAIT_REVIEW",
+        "REVIEW_DENIED",
+        "REPAIR_REQUESTED",
+        "REPAIR_SUBMITTED",
+        "REVIEW_APPROVED"
+      ]
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "allowed",
+        "denied",
+        "manual_required"
+      ]
+    },
+    "reason_code": {
+      "type": "string",
+      "enum": [
+        "all_required_conditions_met",
+        "chatgpt_review_not_approved",
+        "l4_not_accepted",
+        "checks_not_passed",
+        "review_readback_not_verified",
+        "stale_review_detected",
+        "branch_head_changed",
+        "repair_guard_blocked",
+        "missing_required_artifact",
+        "policy_violation",
+        "manual_override_required"
+      ]
+    },
+    "required_conditions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "checks_passed",
+        "chatgpt_review_approved",
+        "review_readback_verified",
+        "l4_accepted",
+        "branch_head_unchanged",
+        "no_stale_review",
+        "no_repair_guard_block",
+        "artifacts_verified",
+        "policy_passed"
+      ],
+      "properties": {
+        "checks_passed": {
+          "type": "boolean"
+        },
+        "chatgpt_review_approved": {
+          "type": "boolean"
+        },
+        "review_readback_verified": {
+          "type": "boolean"
+        },
+        "l4_accepted": {
+          "type": "boolean"
+        },
+        "branch_head_unchanged": {
+          "type": "boolean"
+        },
+        "no_stale_review": {
+          "type": "boolean"
+        },
+        "no_repair_guard_block": {
+          "type": "boolean"
+        },
+        "artifacts_verified": {
+          "type": "boolean"
+        },
+        "policy_passed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "source_artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "l4_run_result",
+        "chatgpt_review_result",
+        "l4_dry_run_artifact"
+      ],
+      "properties": {
+        "l4_run_result": {
+          "type": "string",
+          "minLength": 1
+        },
+        "chatgpt_review_result": {
+          "type": "string",
+          "minLength": 1
+        },
+        "l4_dry_run_artifact": {
+          "type": "string",
+          "minLength": 1
+        },
+        "gate_input": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "allowed"
+          }
+        },
+        "required": [
+          "decision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "reason_code": {
+            "const": "all_required_conditions_met"
+          },
+          "review_verdict": {
+            "const": "approved"
+          },
+          "l4_final_state": {
+            "const": "ACCEPTED"
+          },
+          "required_conditions": {
+            "properties": {
+              "checks_passed": {
+                "const": true
+              },
+              "chatgpt_review_approved": {
+                "const": true
+              },
+              "review_readback_verified": {
+                "const": true
+              },
+              "l4_accepted": {
+                "const": true
+              },
+              "branch_head_unchanged": {
+                "const": true
+              },
+              "no_stale_review": {
+                "const": true
+              },
+              "no_repair_guard_block": {
+                "const": true
+              },
+              "artifacts_verified": {
+                "const": true
+              },
+              "policy_passed": {
+                "const": true
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
