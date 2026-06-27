@@ -1,3 +1,4 @@
+import { evaluateGateProductionRules } from './production-rules.mjs';
 const GATE_DECISION_PROTOCOL = 'baijin-gate-production-decision/1.0';
 
 const DEFAULT_SOURCE_ARTIFACTS = Object.freeze({
