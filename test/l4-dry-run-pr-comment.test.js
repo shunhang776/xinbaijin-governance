@@ -19,18 +19,9 @@ function makeArtifact() {
     status: 'COMPLETED',
     final_state: 'ACCEPTED',
     files: [
-      {
-        kind: 'pipeline_input',
-        path: 'artifacts/l4/l4-pipeline-input.json'
-      },
-      {
-        kind: 'pipeline_output',
-        path: 'artifacts/l4/l4-pipeline-output.json'
-      },
-      {
-        kind: 'run_result',
-        path: 'artifacts/l4/l4-run-result.json'
-      }
+      { kind: 'pipeline_input', path: 'artifacts/l4/l4-pipeline-input.json' },
+      { kind: 'pipeline_output', path: 'artifacts/l4/l4-pipeline-output.json' },
+      { kind: 'run_result', path: 'artifacts/l4/l4-run-result.json' }
     ],
     created_at: '2026-06-27T00:00:00.000Z'
   };
