@@ -1,0 +1,24 @@
+{
+  "protocol": "baijin-claude-repair-submission/1.0",
+  "submission_id": "claude-repair-submission-invalid-empty-findings",
+  "source_handoff_id": "claude-repair-handoff-001",
+  "source_review_result_id": "chatgpt-review-result-changes-001",
+  "invocation_id": "invocation-mcp-002",
+  "repository": "shunhang776/xinbaijin-mcp",
+  "branch": "dev",
+  "reviewed_commit": "2222222222222222222222222222222222222222",
+  "review_commit": "cccccccccccccccccccccccccccccccccccccccc",
+  "repair_base_commit": "2222222222222222222222222222222222222222",
+  "repair_commit": "dddddddddddddddddddddddddddddddddddddddd",
+  "repair_round": 0,
+  "max_repair_round": 2,
+  "status": "repair_submitted",
+  "actor": "claude-code",
+  "fix_summary": "Invalid fixture without resolved findings.",
+  "changed_files": [
+    "worker.js"
+  ],
+  "resolved_findings": [],
+  "forbidden_actions_observed": [],
+  "created_at": "2026-06-27T00:00:00.000Z"
+}
