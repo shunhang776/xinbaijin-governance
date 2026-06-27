@@ -1,0 +1,64 @@
+You are running Baijin Phase0 repair bridge positive smoke test.
+
+Read .codex/repair-bridge-input.json.
+
+Your task is NOT to review code.
+Your task is NOT to modify code.
+Your task is NOT to write review.json.
+Your task is NOT to commit, push, or create PR.
+
+Only write one file:
+.codex/repair-bridge-observation.json
+
+The output file MUST be valid JSON.
+The output file MUST be ASCII-only.
+
+Required fields:
+protocol
+experiment
+codex_role
+target_repository
+target_branch
+source_verdict
+reviewed_commit
+review_commit
+repair_round
+finding_count
+next_actor
+repair_handoff_summary
+allowed_actions
+forbidden_actions
+observed_at
+conclusion
+
+Required values:
+protocol = baijin-codex-repair-bridge-observation/1.0
+experiment = phase0-repair-bridge
+codex_role = bridge
+target_repository = shunhang776/xinbaijin-mcp
+target_branch = dev
+source_verdict = changes_requested
+reviewed_commit = 0123456789abcdef0123456789abcdef01234567
+review_commit = abcdef0123456789abcdef0123456789abcdef01
+repair_round = 0
+finding_count = 1
+next_actor = claude-code
+conclusion = CODEX_REPAIR_BRIDGE_READY
+
+repair_handoff_summary must summarize the finding and say that Claude should repair worker.js without modifying review.json.
+
+Forbidden actions:
+Do not review code.
+Do not modify code.
+Do not modify review.json.
+Do not modify schemas.
+Do not modify policies.
+Do not modify workflows.
+Do not commit.
+Do not push.
+Do not create PR.
+Do not decide approved.
+Do not bypass ChatGPT review.
+Do not bypass gate.
+
+After writing .codex/repair-bridge-observation.json, stop.
