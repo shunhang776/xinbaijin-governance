@@ -1,0 +1,14 @@
+{
+  "protocol": "baijin-chatgpt-review-result/1.0",
+  "result_id": "chatgpt-review-result-invalid-001",
+  "invocation_id": "invocation-mcp-invalid",
+  "repository": "shunhang776/xinbaijin-mcp",
+  "branch": "dev",
+  "status": "review_submitted",
+  "reviewed_commit": "3333333333333333333333333333333333333333",
+  "based_on_branch_head": "3333333333333333333333333333333333333333",
+  "review_commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "verdict": "approved",
+  "findings": [],
+  "created_at": "2026-06-27T00:00:00.000Z"
+}
