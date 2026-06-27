@@ -100,10 +100,11 @@ describe('Gate production decision builder', () => {
 
   it('denies production gate when readback is not fully verified', () => {
     const validate = makeValidator();
+    const approved = readJson('fixtures/chatgpt-review-result/valid-approved.json');
     const reviewResult = {
-      ...readJson('fixtures/chatgpt-review-result/valid-approved.json'),
+      ...approved,
       readback: {
-        ...readJson('fixtures/chatgpt-review-result/valid-approved.json').readback,
+        ...approved.readback,
         verified: false
       }
     };
