@@ -1,0 +1,132 @@
+{
+    "$schema":  "https://json-schema.org/draft/2020-12/schema",
+    "$id":  "https://baijin.local/schemas/codex-bridge-request.schema.json",
+    "title":  "Baijin Codex Bridge Request",
+    "type":  "object",
+    "additionalProperties":  false,
+    "required":  [
+                     "protocol",
+                     "request_id",
+                     "bridge_type",
+                     "repository",
+                     "branch",
+                     "codex_role",
+                     "created_at"
+                 ],
+    "properties":  {
+                       "protocol":  {
+                                        "const":  "baijin-codex-bridge-request/1.0"
+                                    },
+                       "request_id":  {
+                                          "type":  "string",
+                                          "minLength":  1
+                                      },
+                       "bridge_type":  {
+                                           "type":  "string",
+                                           "enum":  [
+                                                        "review_bridge",
+                                                        "repair_bridge",
+                                                        "l4_loop_bridge"
+                                                    ]
+                                       },
+                       "repository":  {
+                                          "type":  "string",
+                                          "enum":  [
+                                                       "shunhang776/xinbaijin",
+                                                       "shunhang776/xinbaijin-mcp",
+                                                       "shunhang776/xinbaijin-governance"
+                                                   ]
+                                      },
+                       "branch":  {
+                                      "type":  "string",
+                                      "minLength":  1
+                                  },
+                       "codex_role":  {
+                                          "type":  "string",
+                                          "const":  "bridge"
+                                      },
+                       "candidate_commit":  {
+                                                "type":  [
+                                                             "string",
+                                                             "null"
+                                                         ],
+                                                "pattern":  "^[0-9a-f]{40}$"
+                                            },
+                       "review_commit":  {
+                                             "type":  [
+                                                          "string",
+                                                          "null"
+                                                      ],
+                                             "pattern":  "^[0-9a-f]{40}$"
+                                         },
+                       "repair_commit":  {
+                                             "type":  [
+                                                          "string",
+                                                          "null"
+                                                      ],
+                                             "pattern":  "^[0-9a-f]{40}$"
+                                         },
+                       "verdict":  {
+                                       "type":  [
+                                                    "string",
+                                                    "null"
+                                                ],
+                                       "enum":  [
+                                                    "approved",
+                                                    "changes_requested",
+                                                    "blocked",
+                                                    null
+                                                ]
+                                   },
+                       "trigger_key":  {
+                                           "type":  [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                           "enum":  [
+                                                        "REVIEW_CLAUDE_LATEST_HANDOFF",
+                                                        "REVIEW_MCP_LATEST_HANDOFF",
+                                                        null
+                                                    ]
+                                       },
+                       "findings":  {
+                                        "type":  "array",
+                                        "items":  {
+                                                      "type":  "object",
+                                                      "additionalProperties":  true
+                                                  }
+                                    },
+                       "repair_round":  {
+                                            "type":  "integer",
+                                            "minimum":  0,
+                                            "maximum":  10
+                                        },
+                       "max_repair_round":  {
+                                                "type":  "integer",
+                                                "minimum":  0,
+                                                "maximum":  10
+                                            },
+                       "expected_next_actor":  {
+                                                   "type":  [
+                                                                "string",
+                                                                "null"
+                                                            ],
+                                                   "enum":  [
+                                                                "chatgpt-baijin-reviewer",
+                                                                "claude-code",
+                                                                "human",
+                                                                null
+                                                            ]
+                                               },
+                       "forbidden_actions":  {
+                                                 "type":  "array",
+                                                 "items":  {
+                                                               "type":  "string"
+                                                           }
+                                             },
+                       "created_at":  {
+                                          "type":  "string",
+                                          "format":  "date-time"
+                                      }
+                   }
+}

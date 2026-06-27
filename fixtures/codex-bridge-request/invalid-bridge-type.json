@@ -1,0 +1,10 @@
+{
+    "protocol":  "baijin-codex-bridge-request/1.0",
+    "request_id":  "request-invalid-type",
+    "bridge_type":  "unknown_bridge",
+    "repository":  "shunhang776/xinbaijin-mcp",
+    "branch":  "dev",
+    "codex_role":  "bridge",
+    "created_at":  "2026-06-27T06:24:49.833Z"
+}
+
