@@ -1,17 +1,11 @@
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { describe, expect, it } from 'vitest';
-import { buildDryRunSummary } from '../scripts/l4/write-dry-run-summary.mjs';
-
-function readJson(path) {
-  const raw = readFileSync(resolve(path), 'utf8').replace(/^\uFEFF/, '');
-  return JSON.parse(raw);
-}
 
 function writeJson(path, value) {
-  writeFileSync(resolve(path), JSON.stringify(value, null, 2) + '\n', 'utf8');
+  writeFileSync(path, JSON.stringify(value, null, 2) + '\n', 'utf8');
 }
 
 function makeArtifact() {
@@ -60,16 +54,6 @@ function makeRunResult() {
 }
 
 describe('L4 dry-run summary', () => {
-  it('builds markdown summary text', () => {
-    const summary = buildDryRunSummary(makeArtifact(), makeRunResult());
-
-    expect(summary).toContain('## L4 Pipeline Dry Run');
-    expect(summary).toContain('`COMPLETED`');
-    expect(summary).toContain('`ACCEPTED`');
-    expect(summary).toContain('artifact-summary-001');
-    expect(summary).toContain('l4-run-result.json');
-  });
-
   it('writes summary from CLI', () => {
     const dir = mkdtempSync(join(tmpdir(), 'baijin-l4-dry-run-summary-'));
     const artifactPath = join(dir, 'artifact.json');
@@ -97,9 +81,14 @@ describe('L4 dry-run summary', () => {
 
       expect(output.ok).toBe(true);
       expect(output.artifact_id).toBe('artifact-summary-001');
+      expect(output.status).toBe('COMPLETED');
+      expect(output.final_state).toBe('ACCEPTED');
+
       expect(summary).toContain('## L4 Pipeline Dry Run');
       expect(summary).toContain('`COMPLETED`');
       expect(summary).toContain('`ACCEPTED`');
+      expect(summary).toContain('artifact-summary-001');
+      expect(summary).toContain('l4-run-result.json');
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }
