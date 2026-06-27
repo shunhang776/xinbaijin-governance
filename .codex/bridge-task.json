@@ -1,0 +1,30 @@
+{
+    "protocol":  "baijin-codex-bridge-task/1.0",
+    "repository":  "xinbaijin-governance",
+    "full_repository":  "shunhang776/xinbaijin-governance",
+    "branch":  "main",
+    "target":  "L4 bridge smoke test",
+    "trigger":  "审查 Claude 最新交接",
+    "expected_flow":  [
+                          "detect commit",
+                          "invoke ChatGPT review",
+                          "write review.json",
+                          "validate schema",
+                          "return verdict"
+                      ],
+    "codex_role":  "bridge",
+    "forbidden_actions":  [
+                              "do not approve by itself",
+                              "do not modify review.json",
+                              "do not bypass ChatGPT review",
+                              "do not bypass gate",
+                              "do not push directly to protected branch"
+                          ],
+    "success_criteria":  [
+                             "Codex can identify repository, branch and latest commit",
+                             "Codex can prepare review context",
+                             "Codex can bridge to ChatGPT review trigger",
+                             "Codex can observe or read review.json result",
+                             "Codex can distinguish approved, changes_requested and blocked"
+                         ]
+}
