@@ -1,0 +1,55 @@
+{
+  "protocol": "baijin-phase5-rollback-plan/1.0",
+  "rollback_plan_id": "phase5-rollback-plan-draft-001",
+  "phase": "phase5",
+  "repository": "shunhang776/xinbaijin-mcp",
+  "branch": "dev",
+  "mode": "draft",
+  "rollback_ready": false,
+  "rollback_scope": "full_l4_loop",
+  "rollback_triggers": [
+    "production_gate_misfire",
+    "workflow_permission_violation",
+    "operator_requested"
+  ],
+  "rollback_steps": [
+    {
+      "order": 1,
+      "action": "Disable Phase5 production_enforcer mode.",
+      "owner": "rollback_owner",
+      "requires_manual_confirmation": true
+    },
+    {
+      "order": 2,
+      "action": "Revert to manual_gate mode and keep draft workflows read-only.",
+      "owner": "gate_owner",
+      "requires_manual_confirmation": true
+    }
+  ],
+  "verification_checks": [
+    {
+      "name": "phase5_disabled",
+      "expected": "production_enabled is false"
+    },
+    {
+      "name": "workflow_permissions",
+      "expected": "draft workflows remain contents: read"
+    }
+  ],
+  "owners": {
+    "rollback_owner": "owner",
+    "gate_owner": "owner",
+    "repository_owner": "owner"
+  },
+  "approvals": {
+    "rollback_owner_approved": false,
+    "gate_owner_approved": false,
+    "repository_owner_approved": false
+  },
+  "source_documents": {
+    "phase5_enablement": "schemas/phase5-enablement.schema.json",
+    "l4_production_acceptance": "docs/L4-PRODUCTION-ACCEPTANCE.md",
+    "gate_enablement_boundary": "docs/GATE-PRODUCTION-ENABLEMENT-BOUNDARY.md"
+  },
+  "created_at": "2026-06-27T00:00:00.000Z"
+}
